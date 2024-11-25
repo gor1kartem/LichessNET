@@ -1,5 +1,7 @@
 ﻿using LichessNET.API.Users;
+using LichessNET.Entities.Enumerations;
 using LichessNET.Entities;
+using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Web;
 using TokenBucket;
@@ -60,6 +62,14 @@ namespace LichessNET.API
             ratelimitController.Consume("api/users/status", true);
             logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri + " (" + ids.Length + " ids)");
             return await UsersAPIFunctions.GetRealTimeStatus(builder, ids, withSignal);
+        }
+
+        public async Task<List<LichessUser>> GetLeaderboard(int nPlayers, Gamemode gamemode)
+        {
+            var builder = GetUriBuilder($"api/player/top/{nPlayers}/{gamemode.ToEnumMember()}");
+            ratelimitController.Consume("api/player/top", true);
+            logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri);
+            return await UsersAPIFunctions.GetLeaderboard(builder, nPlayers, gamemode);
         }
 
         public UriBuilder GetUriBuilder(string endpoint)

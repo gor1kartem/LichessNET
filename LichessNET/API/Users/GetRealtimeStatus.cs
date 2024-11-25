@@ -1,5 +1,6 @@
 ﻿using LichessNET.Entities;
 using LichessNET.Entities.Enumerations;
+using LichessNET.Entities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -17,11 +18,9 @@ namespace LichessNET.API.Users
     internal partial class UsersAPIFunctions
     {
 
-
+        [Obsolete("This function is not yet correctly implemented")]
         internal static async Task<List<UserRealTimeStatus>> GetRealTimeStatus(UriBuilder builder, string[] ids, bool withSignal = false, bool withGameIds = false, bool withGameMetas = false)
         {
-            //var builder = new UriBuilder(Constants.BASE_URL + "api/users/status");
-            //builder.Port = -1;
             var query = HttpUtility.ParseQueryString(builder.Query);
             query["ids"] = string.Join(',', ids);
             query["withSignal"] = withSignal.ToString();
@@ -41,13 +40,13 @@ namespace LichessNET.API.Users
 
                 List<UserRealTimeStatus> users = new List<UserRealTimeStatus>();
 
-                var dynamicObject = JsonConvert.DeserializeObject<dynamic>(s)[0];
+                var dynamicObject = JsonConvert.DeserializeObject<dynamic>(s);
                 if (dynamicObject == null)
                 {
                     logger.LogError("Failed to deserialize response from " + url);
                     return null;
                 }
-                foreach(var d in dynamicObject)
+                foreach(var d in dynamicObject.ToObject<JObject>())
                 {
                     try
                     {

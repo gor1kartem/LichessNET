@@ -1,4 +1,5 @@
 ﻿using LichessNET.Entities.Enumerations;
+using LichessNET.Entities;
 
 namespace LichessNET.Entities
 {

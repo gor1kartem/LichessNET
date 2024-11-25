@@ -1,9 +1,10 @@
 ﻿using LichessNET.API;
 
 var client = new LichessAPIClient();
-var user = await client.GetRealTimeStatus(["thibault", "rabergsel"], true);
+var users = await client.GetLeaderboard(10, LichessNET.Entities.Enumerations.Gamemode.Bullet);
 
-foreach(var u in user)
+int i = 1;
+foreach(var u in users)
 {
-    Console.WriteLine(u.User.Username + " has signal strength: " + u.Signal);
+    Console.WriteLine($"{i}. {u.Username}, Rating {u.Ratings[LichessNET.Entities.Enumerations.Gamemode.Bullet].Rating}");
 }
