@@ -30,7 +30,7 @@ namespace LichessNET.API.Users
                 }
                 else
                 {
-                    logger.LogError("Unsuccessful request to endpoint " + uri + ": Response Code" + response.StatusCode);
+                    logger.LogError("Unsuccessful request to endpoint " + uri + ": Response Code " + response.StatusCode);
                     return false;
                 }
                

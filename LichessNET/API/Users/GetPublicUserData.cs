@@ -8,10 +8,13 @@ namespace LichessNET.API.Users
 {
     internal partial class UsersAPIFunctions
     {
-        internal static async Task<LichessUser> GetPublicUserData(string username, UriBuilder builder)
+        internal static async Task<LichessUser> GetPublicUserData(HttpRequestMessage request)
         {
 
-            string url = builder.ToString();
+            string url = request.RequestUri.ToString();
+            logger.LogInformation("Requesting to " + url);
+            
+            
             using (var httpClient = new HttpClient())
             {
                 var response = await httpClient.GetAsync(url);
@@ -25,9 +28,7 @@ namespace LichessNET.API.Users
                     logger.LogError("Failed to deserialize response from " + url);
                     return null;
                 }
-
                 
-
                 var LichessUser = new LichessUser()
                 {
                     Username = dynamicObject.username,

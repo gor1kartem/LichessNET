@@ -14,15 +14,13 @@ namespace LichessNET.API.Users
 {
     internal partial class UsersAPIFunctions
     {
-
-        public static async Task<List<LichessUser>> GetLeaderboard(UriBuilder builder, int nPlayers, Gamemode gamemode)
+        public static async Task<List<LichessUser>> GetLeaderboard(HttpRequestMessage request, int nPlayers, Gamemode gamemode)
         {
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            builder.Query = query.ToString();
-            string url = builder.ToString();
+            string url = request.RequestUri.ToString();
+            logger.LogInformation("Requesting to " + url);
             using (var httpClient = new HttpClient())
             {
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.SendAsync(request);
                 if (!CheckRequest(response, url)) return null;
                 string s = await response.Content.ReadAsStringAsync();
                 if (s == null)

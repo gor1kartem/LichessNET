@@ -1,10 +1,15 @@
 ﻿using LichessNET.API;
 
-var client = new LichessAPIClient();
-var users = await client.GetLeaderboard(10, LichessNET.Entities.Enumerations.Gamemode.Bullet);
-
-int i = 1;
-foreach(var u in users)
-{
-    Console.WriteLine($"{i}. {u.Username}, Rating {u.Ratings[LichessNET.Entities.Enumerations.Gamemode.Bullet].Rating}");
-}
+var client = new LichessAPIClient(File.ReadAllText("token.txt"));
+var game = await client.GetGame("v0ueAZUU094H", true);
+Console.WriteLine(game.Id);
+Console.WriteLine(game.CreatedAt);
+Console.WriteLine(game.CreatedAtTimestamp);
+Console.WriteLine(game.LastMoveAt);
+Console.WriteLine(game.LastMoveTimestamp);
+Console.WriteLine(game.Variant);
+Console.WriteLine(game.White.Id);
+Console.WriteLine(game.White.Rating);
+Console.WriteLine(game.Black.Id);
+Console.WriteLine(game.Clock.InitialTime);
+Console.WriteLine(game.Opening.Eco);

@@ -17,15 +17,12 @@ namespace LichessNET.API.Users
 {
     internal partial class UsersAPIFunctions
     {
-
-        [Obsolete("This function is not yet correctly implemented")]
-        internal static async Task<List<UserRealTimeStatus>> GetRealTimeStatus(UriBuilder builder, string[] ids, bool withSignal = false, bool withGameIds = false, bool withGameMetas = false)
+        
+        internal static async Task<List<UserRealTimeStatus>> GetMultipleRealTimeStatus(HttpRequestMessage request)
         {
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["ids"] = string.Join(',', ids);
-            query["withSignal"] = withSignal.ToString();
-            builder.Query = query.ToString();
-            string url = builder.ToString();
+            string url = request.RequestUri.ToString();
+            logger.LogInformation("Requesting to " + url);
+            
             using (var httpClient = new HttpClient())
             {
                 var response = await httpClient.GetAsync(url);
@@ -69,15 +66,10 @@ namespace LichessNET.API.Users
 
         }
 
-        internal static async Task<UserRealTimeStatus> GetRealTimeStatus(UriBuilder builder, string id, bool withSignal = false, bool withGameIds = false, bool withGameMetas = false)
+        internal static async Task<UserRealTimeStatus> GetRealTimeStatus(HttpRequestMessage request)
         {
-            //var builder = new UriBuilder(Constants.BASE_URL + "api/users/status");
-            //builder.Port = -1;
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["ids"] = id;
-            query["withSignal"] = withSignal.ToString();
-            builder.Query = query.ToString();
-            string url = builder.ToString();
+            string url = request.RequestUri.ToString();
+            logger.LogInformation("Requesting to " + url);
             using (var httpClient = new HttpClient())
             {
                 var response = await httpClient.GetAsync(url);

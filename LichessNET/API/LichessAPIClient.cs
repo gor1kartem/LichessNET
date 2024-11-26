@@ -1,11 +1,16 @@
-﻿using LichessNET.API.Users;
+﻿using System.Net.Http.Headers;
+using LichessNET.API.Users;
 using LichessNET.Entities.Enumerations;
 using LichessNET.Entities;
 using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Web;
+using ilf.pgn.Data;
+using LichessNET.API.Account;
+using LichessNET.API.Games;
 using TokenBucket;
 using Vertical.SpectreLogger;
+using Game = LichessNET.Entities.Game.Game;
 
 namespace LichessNET.API
 {
@@ -42,7 +47,6 @@ namespace LichessNET.API
             if (Token != "")
             {
                 logger.LogInformation("Connecting to Lichess API with token");
-                logger.LogWarning("Authentication with Token is not yet implemented. Keep an eye on any updates");
             }
             else
             {
@@ -61,10 +65,8 @@ namespace LichessNET.API
         /// <returns>A LichessUser obeject with all information sent by lichess</returns>
         public async Task<LichessUser> GetPublicProfile(string username)
         {
-            var builder = GetUriBuilder("api/user/" + username);
             ratelimitController.Consume("api/user/", true);
-            logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri);
-            return await UsersAPIFunctions.GetPublicUserData(username, builder);
+            return await UsersAPIFunctions.GetPublicUserData(GetRequestScaffold("api/user/" + username));
         }
 
         /// <summary>
@@ -76,10 +78,11 @@ namespace LichessNET.API
         /// <returns>An object with all Real Time Data, including a LichessUser object with all information additionaly sent</returns>
         public async Task<UserRealTimeStatus> GetRealTimeStatus(string id, bool withSignal)
         {
-            var builder = GetUriBuilder("api/users/status");
             ratelimitController.Consume("api/users/status", true);
-            logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri);
-            return await UsersAPIFunctions.GetRealTimeStatus(builder, id, withSignal);
+            return await UsersAPIFunctions.GetRealTimeStatus(
+                GetRequestScaffold("api/users/status",
+                    new Tuple<string, string>("ids", id),
+                    new Tuple<string, string>("withSignal", withSignal.ToString())));
         }
 
         /// <summary>
@@ -91,10 +94,11 @@ namespace LichessNET.API
         /// <returns>A list of UserRealTimeStatus objects containing all information.</returns>
         public async Task<List<UserRealTimeStatus>> GetRealTimeStatus(string[] ids, bool withSignal)
         {
-            var builder = GetUriBuilder("api/users/status");
             ratelimitController.Consume("api/users/status", true);
-            logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri + " (" + ids.Length + " ids)");
-            return await UsersAPIFunctions.GetRealTimeStatus(builder, ids, withSignal);
+            return await UsersAPIFunctions.GetMultipleRealTimeStatus(
+                GetRequestScaffold("api/users/status",
+                    new Tuple<string, string>("ids", string.Join(",", ids)),
+                    new Tuple<string, string>("withSignal", withSignal.ToString())));
         }
         
         /// <summary>
@@ -105,11 +109,25 @@ namespace LichessNET.API
         /// <returns>A list of LichessUser objects with all included information.</returns>
         public async Task<List<LichessUser>> GetLeaderboard(int nPlayers, Gamemode gamemode)
         {
-            var builder = GetUriBuilder($"api/player/top/{nPlayers}/{gamemode.ToEnumMember()}");
             ratelimitController.Consume("api/player/top", true);
-            logger.LogInformation("Requesting to " + builder.Uri.AbsoluteUri);
-            return await UsersAPIFunctions.GetLeaderboard(builder, nPlayers, gamemode);
+            return await UsersAPIFunctions.GetLeaderboard
+                (GetRequestScaffold($"api/player/top/{nPlayers}/{gamemode.ToEnumMember()}"),
+                    nPlayers,
+                    gamemode);
         }
+
+        public async Task<LichessUser> GetOwnProfile()
+        {
+            ratelimitController.Consume("api/player/top", true);
+            return await AccountAPIFunctions.GetOwnProfile(GetRequestScaffold($"api/account"));
+        }
+        
+        public async Task<Game> GetGame(string gameId, bool withMoves = true)
+        {
+            ratelimitController.Consume("api/game", true);
+            return await GamesAPIFunctions.FetchGame(GetRequestScaffold($"api/game/{gameId}", new Tuple<string, string>("moves", withMoves.ToString())));
+        }
+        
 
         /// <summary>
         /// Gets the UriBuilder objects for the lichess client.
@@ -117,11 +135,32 @@ namespace LichessNET.API
         /// </summary>
         /// <param name="endpoint"></param>
         /// <returns></returns>
-        private UriBuilder GetUriBuilder(string endpoint)
+        private UriBuilder GetUriBuilder(string endpoint, params Tuple<string, string>[] QueryParameters)
         {
             var builder = new UriBuilder(Constants.BASE_URL + endpoint);
             builder.Port = -1;
+            
+            var query = HttpUtility.ParseQueryString(builder.Query);
+
+            foreach (var param in QueryParameters)
+            {
+                query[param.Item1] = param.Item2;
+            }
+
+            builder.Query = query.ToString();
+            
             return builder;
+        }
+
+        private HttpRequestMessage GetRequestScaffold(string endpoint, params Tuple<string, string>[] QueryParameters)
+        {
+            var request = new HttpRequestMessage();
+            request.RequestUri = GetUriBuilder(endpoint, QueryParameters).Uri;
+            if (Token != "")
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            }
+            return request;
         }
 
     }
