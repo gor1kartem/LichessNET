@@ -1,5 +1,8 @@
 ﻿namespace LichessNET.Entities
 {
+    /// <summary>
+    /// This class contains the game counts of a user in the structure fetched from the lichess API
+    /// </summary>
     public class GameCounts
     {
         public int All { get; set; }

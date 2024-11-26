@@ -5,7 +5,6 @@ namespace LichessNET.Entities
     public class UserRealTimeStatus
     {
         
-
         public LichessUser User { get; set; }
 
         public string name { get; set; }
