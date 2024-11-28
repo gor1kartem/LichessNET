@@ -5,12 +5,13 @@ using LichessNET.Entities;
 using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Web;
-using ilf.pgn.Data;
 using LichessNET.API.Account;
 using LichessNET.API.Games;
+using OpeningMentor.Chess.Model;
 using TokenBucket;
 using Vertical.SpectreLogger;
 using Game = LichessNET.Entities.Game.Game;
+
 
 namespace LichessNET.API
 {
@@ -21,15 +22,16 @@ namespace LichessNET.API
     public partial class LichessAPIClient
     {
         private ILogger logger;
-        /// <summary>
-        /// The token to access the Lichess API
-        /// </summary>
-        internal string Token = "";
-        
+
         /// <summary>
         /// Bucket handler for ratelimits
         /// </summary>
         APIRatelimitController ratelimitController = new APIRatelimitController();
+
+        /// <summary>
+        /// The token to access the Lichess API
+        /// </summary>
+        internal string Token = "";
 
         /// <summary>
         /// Creates a lichess API client, according to settings
@@ -37,7 +39,6 @@ namespace LichessNET.API
         /// <param name="Token">The token for accessing the lichess API</param>
         public LichessAPIClient(string Token = "")
         {
-
             var loggerFactory = LoggerFactory.Create(builder => builder
                 .AddSpectreConsole());
 
@@ -53,7 +54,9 @@ namespace LichessNET.API
                 logger.LogInformation("Connecting to Lichess API without token");
             }
 
-            ratelimitController.RegisterBucket("api/users/status", TokenBuckets.Construct().WithCapacity(2).WithFixedIntervalRefillStrategy(1, TimeSpan.FromSeconds(5)).Build());
+            ratelimitController.RegisterBucket("api/users/status",
+                TokenBuckets.Construct().WithCapacity(2).WithFixedIntervalRefillStrategy(1, TimeSpan.FromSeconds(5))
+                    .Build());
 
             logger.LogInformation("Connection to Lichess API established.");
         }
@@ -100,7 +103,7 @@ namespace LichessNET.API
                     new Tuple<string, string>("ids", string.Join(",", ids)),
                     new Tuple<string, string>("withSignal", withSignal.ToString())));
         }
-        
+
         /// <summary>
         /// Gets the Leaderboard of a certain gamemode.
         /// </summary>
@@ -111,9 +114,9 @@ namespace LichessNET.API
         {
             ratelimitController.Consume("api/player/top", true);
             return await UsersAPIFunctions.GetLeaderboard
-                (GetRequestScaffold($"api/player/top/{nPlayers}/{gamemode.ToEnumMember()}"),
-                    nPlayers,
-                    gamemode);
+            (GetRequestScaffold($"api/player/top/{nPlayers}/{gamemode.ToEnumMember()}"),
+                nPlayers,
+                gamemode);
         }
 
         public async Task<LichessUser> GetOwnProfile()
@@ -121,13 +124,22 @@ namespace LichessNET.API
             ratelimitController.Consume("api/player/top", true);
             return await AccountAPIFunctions.GetOwnProfile(GetRequestScaffold($"api/account"));
         }
-        
+
         public async Task<Game> GetGame(string gameId, bool withMoves = true)
         {
             ratelimitController.Consume("api/game", true);
-            return await GamesAPIFunctions.FetchGame(GetRequestScaffold($"api/game/{gameId}", new Tuple<string, string>("moves", withMoves.ToString())));
+            return await GamesAPIFunctions.FetchGame(GetRequestScaffold($"api/game/{gameId}",
+                new Tuple<string, string>("moves", withMoves.ToString()),
+                new Tuple<string, string>("pgnInJson", true.ToString())
+            ));
         }
-        
+
+        public async Task<Database> GetGames(string username)
+        {
+            ratelimitController.Consume($"api/games/user/{username}", true);
+            return await GamesAPIFunctions.FetchGames(GetRequestScaffold($"api/games/user/{username}"));
+        }
+
 
         /// <summary>
         /// Gets the UriBuilder objects for the lichess client.
@@ -139,7 +151,7 @@ namespace LichessNET.API
         {
             var builder = new UriBuilder(Constants.BASE_URL + endpoint);
             builder.Port = -1;
-            
+
             var query = HttpUtility.ParseQueryString(builder.Query);
 
             foreach (var param in QueryParameters)
@@ -148,7 +160,7 @@ namespace LichessNET.API
             }
 
             builder.Query = query.ToString();
-            
+
             return builder;
         }
 
@@ -160,8 +172,8 @@ namespace LichessNET.API
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             }
+
             return request;
         }
-
     }
 }

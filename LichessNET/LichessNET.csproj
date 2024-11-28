@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+      <PackageReference Include="Chess.Pgn" Version="0.1.1"/>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="pgn.net" Version="1.2.1" />
     <PackageReference Include="TokenBucket" Version="2.0.0" />
     <PackageReference Include="vertical-spectreconsolelogger" Version="0.10.1-dev.20241119.33" />
   </ItemGroup>

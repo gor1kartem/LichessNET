@@ -11,8 +11,4 @@
     <ProjectReference Include="..\LichessNET\LichessNET.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="pgn.net" Version="1.2.1" />
-  </ItemGroup>
-
 </Project>
