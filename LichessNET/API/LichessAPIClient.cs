@@ -60,20 +60,9 @@ namespace LichessNET.API
             }
 
             logger.LogInformation("Connection to Lichess API established.");
-        }
 
-        public async Task<LichessUser> GetOwnProfile()
-        {
-            var request = GetRequestScaffold("api/account");
-            var response = SendRequest(request);
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<LichessUser>(content);
-        }
-
-        public async Task<List<UserRealTimeStatus>> GetRealTimeUserStatus(string id, bool withSignal = false,
-            bool withGameIds = false, bool withGameMetas = false)
-        {
-            return await GetRealTimeUserStatus(new List<string> { id }, withSignal, withGameIds, withGameMetas);
+            ratelimitController.RegisterBucket("api/account", TokenBuckets.Construct().WithCapacity(5)
+                .WithFixedIntervalRefillStrategy(3, TimeSpan.FromSeconds(15)).Build());
         }
 
 
@@ -107,8 +96,9 @@ namespace LichessNET.API
             return request;
         }
 
-        private HttpResponseMessage SendRequest(HttpRequestMessage request)
+        private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, HttpMethod method = null)
         {
+            if (method == null) method = HttpMethod.Get;
             ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
@@ -116,8 +106,8 @@ namespace LichessNET.API
             var response = client.SendAsync(request).Result;
             if (response.IsSuccessStatusCode)
             {
-                logger.LogDebug("Request to " + request.RequestUri + " successful.");
-                logger.LogDebug("Response: \n" + response.Content.ReadAsStringAsync().Result);
+                logger.LogInformation("Request to " + request.RequestUri + " successful.");
+                logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
                 return response;
             }
             else

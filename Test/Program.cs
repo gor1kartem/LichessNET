@@ -2,9 +2,9 @@
 using LichessNET.API;
 
 var client = new LichessAPIClient(File.ReadAllText("token.txt"));
-var status = await client.GetRealTimeUserStatus("thibault");
+var status = await client.GetKidModeStatus();
 
-Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(status, new JsonSerializerOptions()
+Console.WriteLine(JsonSerializer.Serialize(status, new JsonSerializerOptions()
 {
     WriteIndented = true
 }));

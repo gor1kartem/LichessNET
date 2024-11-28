@@ -39,6 +39,18 @@ namespace LichessNET.API
             buckets.Add(EndpointURL, bucket);
         }
 
+        public void Consume()
+        {
+            if (RateLimitedUntil > DateTime.Now)
+            {
+                logger.LogWarning("Endpoint blocked due to ratelimit. Waiting for " +
+                                  (RateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
+                Thread.Sleep((RateLimitedUntil - DateTime.Now).Milliseconds);
+            }
+
+            defaultBucket.Consume();
+        }
+
         public void Consume(string EndpointURL, bool consumedefaultBucket)
         {
             if (RateLimitedUntil > DateTime.Now)
