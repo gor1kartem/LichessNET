@@ -2,9 +2,12 @@
 using LichessNET.API;
 
 var client = new LichessAPIClient(File.ReadAllText("token.txt"));
-var status = await client.GetKidModeStatus();
-
-Console.WriteLine(JsonSerializer.Serialize(status, new JsonSerializerOptions()
+for (int i = 0; i < 10; i++)
 {
-    WriteIndented = true
-}));
+    var status = await client.GetOwnProfile();
+    Console.WriteLine(JsonSerializer.Serialize(status, new JsonSerializerOptions()
+    {
+        WriteIndented = true
+    }));
+    Thread.Sleep(1000);
+}

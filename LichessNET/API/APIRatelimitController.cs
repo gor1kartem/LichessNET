@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog.Fluent;
 using TokenBucket;
 using Vertical.SpectreLogger;
 
@@ -12,6 +13,8 @@ namespace LichessNET.API
     public class APIRatelimitController
     {
         static ILogger logger;
+
+        private int _pipedRequests = 0;
 
         Dictionary<string, ITokenBucket> buckets = new Dictionary<string, ITokenBucket>();
 
@@ -28,6 +31,20 @@ namespace LichessNET.API
             logger = loggerFactory.CreateLogger("APIRateLimitController");
         }
 
+        public int PipedRequests
+        {
+            get { return _pipedRequests; }
+            internal set
+            {
+                _pipedRequests = value;
+                if (PipedRequests > 5)
+                {
+                    logger.LogWarning(
+                        $"Currently there are {PipedRequests} requests in queue. Either the API is blocking requests, or the client is sending too many requests.");
+                }
+            }
+        }
+
         public void ReportBlock(int seconds = 60)
         {
             logger.LogWarning("API Call reported Ratelimit block for " + seconds + " seconds");
@@ -41,6 +58,7 @@ namespace LichessNET.API
 
         public void Consume()
         {
+            PipedRequests++;
             if (RateLimitedUntil > DateTime.Now)
             {
                 logger.LogWarning("Endpoint blocked due to ratelimit. Waiting for " +
@@ -49,10 +67,12 @@ namespace LichessNET.API
             }
 
             defaultBucket.Consume();
+            PipedRequests--;
         }
 
         public void Consume(string EndpointURL, bool consumedefaultBucket)
         {
+            PipedRequests++;
             if (RateLimitedUntil > DateTime.Now)
             {
                 logger.LogWarning("Endpoint call to " + EndpointURL + " blocked due to ratelimit. Waiting for " +
@@ -65,6 +85,8 @@ namespace LichessNET.API
             {
                 buckets[EndpointURL].Consume();
             }
+
+            PipedRequests--;
         }
     }
 }
