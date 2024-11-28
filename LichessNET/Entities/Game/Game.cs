@@ -1,5 +1,4 @@
-﻿using LichessNET.API.Converter;
-using LichessNET.Entities.Enumerations;
+﻿using LichessNET.Entities.Enumerations;
 
 namespace LichessNET.Entities.Game;
 
@@ -17,13 +16,13 @@ public class Game
         get
         {
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddMilliseconds( CreatedAt ).ToLocalTime();
+            dateTime = dateTime.AddMilliseconds(CreatedAt).ToLocalTime();
             return dateTime;
         }
     }
-    
+
     public long LastMoveAt { get; set; }
-    
+
     public DateTime LastMoveTimestamp
     {
         get

@@ -2,29 +2,23 @@
 {
     public class PlaytimeStats
     {
-        private int total;
-        private int tv;
-        
+        public int total;
+        public int tv;
+
         /// <summary>
         /// The total time played by the user
         /// </summary>
-        public TimeSpan Total
+        public TimeSpan TotalSpan
         {
-            get
-            {
-                return TimeSpan.FromSeconds(total);
-            }
+            get { return TimeSpan.FromSeconds(total); }
         }
-        
+
         /// <summary>
         /// The total time seen on TV
         /// </summary>
-        public TimeSpan TV
+        public TimeSpan TVSpan
         {
-            get
-            {
-                return TimeSpan.FromSeconds(tv);
-            }
+            get { return TimeSpan.FromSeconds(tv); }
         }
     }
 }
