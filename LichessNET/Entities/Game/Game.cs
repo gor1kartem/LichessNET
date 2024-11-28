@@ -1,6 +1,4 @@
-﻿using LichessNET.Entities.Enumerations;
-
-namespace LichessNET.Entities.Game;
+﻿namespace LichessNET.Entities.Game;
 
 public class Game
 {
@@ -15,7 +13,7 @@ public class Game
     {
         get
         {
-            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dateTime = dateTime.AddMilliseconds(CreatedAt).ToLocalTime();
             return dateTime;
         }
@@ -27,7 +25,7 @@ public class Game
     {
         get
         {
-            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dateTime = dateTime.AddMilliseconds(LastMoveAt).ToLocalTime();
             return dateTime;
         }

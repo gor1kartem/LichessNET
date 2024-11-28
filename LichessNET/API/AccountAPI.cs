@@ -7,10 +7,10 @@ namespace LichessNET.API;
 public partial class LichessAPIClient
 {
     /// <summary>
-    /// Retrieves the email address of the authenticated user.
+    ///     Retrieves the email address of the authenticated user.
     /// </summary>
     /// <returns>
-    /// A string representing the email address of the authenticated user.
+    ///     A string representing the email address of the authenticated user.
     /// </returns>
     public async Task<string> GetAccountEmail()
     {
@@ -50,10 +50,10 @@ public partial class LichessAPIClient
     }
 
     /// <summary>
-    /// Determines whether the authenticated user's account is in kid mode.
+    ///     Determines whether the authenticated user's account is in kid mode.
     /// </summary>
     /// <returns>
-    /// A boolean value indicating if the user's account is set to kid mode.
+    ///     A boolean value indicating if the user's account is set to kid mode.
     /// </returns>
     public async Task<bool> GetKidModeStatus()
     {

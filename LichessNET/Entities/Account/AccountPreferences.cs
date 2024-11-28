@@ -1,7 +1,7 @@
 ﻿namespace LichessNET.Entities.Account;
 
 /// <summary>
-/// Represents the account preferences of a user on Lichess.
+///     Represents the account preferences of a user on Lichess.
 /// </summary>
 public class AccountPreferences
 {

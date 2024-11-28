@@ -1,11 +1,10 @@
-﻿namespace LichessNET.Entities.Enumerations
+﻿namespace LichessNET.Entities.Enumerations;
+
+public enum Title
 {
-    public enum Title
-    {
-        CM,
-        IM,
-        GM,
-        LM,
-        None
-    }
+    CM,
+    IM,
+    GM,
+    LM,
+    None
 }

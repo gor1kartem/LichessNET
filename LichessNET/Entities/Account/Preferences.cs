@@ -1,7 +1,7 @@
 ﻿namespace LichessNET.Entities.Account;
 
 /// <summary>
-/// Represents the visual and gameplay preferences settings for a user on the Lichess platform.
+///     Represents the visual and gameplay preferences settings for a user on the Lichess platform.
 /// </summary>
 public class Preferences
 {
