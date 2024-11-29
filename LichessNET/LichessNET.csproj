@@ -6,6 +6,11 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageTags>lichess api</PackageTags>
+        <Version>0.0.1</Version>
+        <Description>This is still in heavy development, and by far not really functional. This is just for reserving the NuGet Namespace.
+
+            It currently can access all user endpoints of Lichess with a token.
+        </Description>
     </PropertyGroup>
 
     <ItemGroup>
