@@ -40,10 +40,16 @@ public class Game
                 switch (key.ToLower())
                 {
                     case "whiteelo":
-                        game.White.Rating = int.Parse(value);
+                        if (value == "?")
+                            game.White.Rating = 0;
+                        else
+                            game.White.Rating = int.Parse(value);
                         break;
                     case "blackelo":
-                        game.Black.Rating = int.Parse(value);
+                        if (value == "?")
+                            game.Black.Rating = 0;
+                        else
+                            game.Black.Rating = int.Parse(value);
                         break;
                     case "event":
                         game.Event = value;
