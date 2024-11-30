@@ -1,5 +1,8 @@
 ﻿namespace LichessNET.Entities.Enumerations;
 
+/// <summary>
+/// Represents the quality of a signal connection.
+/// </summary>
 public enum SignalConnection
 {
     Excellent = 1,

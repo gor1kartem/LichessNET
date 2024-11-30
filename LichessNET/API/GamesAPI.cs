@@ -5,7 +5,11 @@ namespace LichessNET.API;
 
 public partial class LichessApiClient
 {
-    public async Task<Game> GetGame(string gameId)
+    /// <summary>
+    /// Retrieves a chess game using its unique identifier from the Lichess API.
+    /// </summary>
+    /// <param name="gameId">The unique identifier of the game to retrieve.</param>
+    public async Task<Game> GetGameAsync(string gameId)
     {
         var request = GetRequestScaffold("game/export/" + gameId);
 
@@ -15,7 +19,13 @@ public partial class LichessApiClient
         return Game.FromPgn(content);
     }
 
-    public async Task<List<Game>> GetGames(string username, int max = 10)
+    /// <summary>
+    /// Retrieves a list of chess games for a specified user from the Lichess API.
+    /// </summary>
+    /// <param name="username">The username of the player whose games are to be retrieved.</param>
+    /// <param name="max">The maximum number of games to retrieve. Default is 10.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of games.</returns>
+    public async Task<List<Game>> GetGamesAsync(string username, int max = 10)
     {
         var request = GetRequestScaffold("api/games/user/" + username,
             Tuple.Create("max", max.ToString()));

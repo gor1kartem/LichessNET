@@ -100,6 +100,15 @@ public partial class LichessApiClient
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
     }
 
+    /// <summary>
+    /// Follows a player with the specified username on Lichess.
+    /// </summary>
+    /// <param name="username">
+    /// The username of the player to follow.
+    /// </param>
+    /// <returns>
+    /// A boolean value indicating whether the operation was successful.
+    /// </returns>
     public async Task<bool> FollowPlayerAsync(string username)
     {
         _ratelimitController.Consume("api/account", false);
@@ -109,6 +118,15 @@ public partial class LichessApiClient
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
     }
 
+    /// <summary>
+    /// Unfollows a specified player using their username.
+    /// </summary>
+    /// <param name="username">
+    /// The username of the player to unfollow.
+    /// </param>
+    /// <returns>
+    /// A boolean value indicating whether the operation was successful.
+    /// </returns>
     public async Task<bool> UnfollowPlayerAsync(string username)
     {
         _ratelimitController.Consume("api/account", false);
@@ -118,6 +136,15 @@ public partial class LichessApiClient
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
     }
 
+    /// <summary>
+    /// Blocks a player on Lichess based on their username.
+    /// </summary>
+    /// <param name="username">
+    /// The username of the player to be blocked.
+    /// </param>
+    /// <returns>
+    /// A boolean indicating whether the player was successfully blocked.
+    /// </returns>
     public async Task<bool> BlockPlayerAsync(string username)
     {
         _ratelimitController.Consume("api/account", false);
@@ -127,6 +154,15 @@ public partial class LichessApiClient
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
     }
 
+    /// <summary>
+    /// Unblocks a player specified by username.
+    /// </summary>
+    /// <param name="username">
+    /// The username of the player to unblock.
+    /// </param>
+    /// <returns>
+    /// A boolean value indicating whether the player was successfully unblocked.
+    /// </returns>
     public async Task<bool> UnblockPlayerAsync(string username)
     {
         _ratelimitController.Consume("api/account", false);

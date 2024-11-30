@@ -2,6 +2,10 @@
 
 namespace LichessNET.Entities.Social;
 
+/// <summary>
+/// Represents the real-time status of a user on Lichess, including various attributes
+/// such as online status, whether they are currently playing or streaming, and other details.
+/// </summary>
 public class UserRealTimeStatus
 {
     public LichessUser User { get; set; } = new LichessUser();

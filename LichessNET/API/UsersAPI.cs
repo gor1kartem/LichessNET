@@ -19,10 +19,10 @@ public partial class LichessApiClient
     /// <returns>
     ///     A task representing the asynchronous operation, containing the real-time status of the user.
     /// </returns>
-    public async Task<UserRealTimeStatus> GetRealTimeUserStatus(string id, bool withSignal = false,
+    public async Task<UserRealTimeStatus> GetRealTimeUserStatusAsync(string id, bool withSignal = false,
         bool withGameIds = false, bool withGameMetas = false)
     {
-        return (await GetRealTimeUserStatus(new List<string> { id }, withSignal, withGameIds, withGameMetas))[0];
+        return (await GetRealTimeUserStatusAsync(new List<string> { id }, withSignal, withGameIds, withGameMetas))[0];
     }
 
     /// <summary>
@@ -35,7 +35,8 @@ public partial class LichessApiClient
     /// <returns>
     ///     A task representing the asynchronous operation, containing a list of user real-time statuses.
     /// </returns>
-    public async Task<List<UserRealTimeStatus>> GetRealTimeUserStatus(IEnumerable<string> ids, bool withSignal = false,
+    public async Task<List<UserRealTimeStatus>> GetRealTimeUserStatusAsync(IEnumerable<string> ids,
+        bool withSignal = false,
         bool withGameIds = false, bool withGameMetas = false)
     {
         _ratelimitController.Consume();

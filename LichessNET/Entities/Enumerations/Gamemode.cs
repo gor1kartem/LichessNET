@@ -2,6 +2,9 @@
 
 namespace LichessNET.Entities.Enumerations;
 
+/// <summary>
+/// Represents the various game modes available in Lichess.
+/// </summary>
 public enum Gamemode
 {
     [EnumMember(Value = "bullet")] Bullet,
