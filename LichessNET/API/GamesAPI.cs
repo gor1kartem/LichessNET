@@ -30,6 +30,7 @@ public partial class LichessApiClient
         {
             try
             {
+                if (gamepgn.Length < 10) continue;
                 list.Add(Game.FromPgn(gamepgn.Trim()));
             }
             catch (Exception e)

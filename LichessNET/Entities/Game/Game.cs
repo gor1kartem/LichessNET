@@ -4,7 +4,7 @@ namespace LichessNET.Entities.Game;
 
 public class Game
 {
-    public Dictionary<string, string> AdditionalData = new Dictionary<string, string>();
+    public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
     public string Event { get; set; }
     public string Url { get; set; }
     public GamePlayer White { get; set; }
@@ -49,6 +49,9 @@ public class Game
                             game.Black.Rating = 0;
                         else
                             game.Black.Rating = int.Parse(value);
+                        break;
+                    case "site":
+                        game.Url = value;
                         break;
                     case "event":
                         game.Event = value;
