@@ -7,4 +7,10 @@ LichessNET is a C# library for interacting with the Lichess API. It provides fun
 
 ## Installation
 
-You can install LichessNET via NuGet.
+You can install LichessNET via NuGet. 
+
+| Downloads                                                       | Version  |
+| -------------                                                   | ------------- |
+| ![NuGet Downloads](https://img.shields.io/nuget/dt/LichessNET)  | ![NuGet Version](https://img.shields.io/nuget/v/LichessNET)  |
+
+
