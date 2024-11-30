@@ -99,4 +99,40 @@ public partial class LichessApiClient
 
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
     }
+
+    public async Task<bool> FollowPlayerAsync(string username)
+    {
+        _ratelimitController.Consume("api/account", false);
+
+        var request = GetRequestScaffold($"api/rel/follow/{username}");
+        var response = await SendRequest(request, HttpMethod.Post);
+        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+    }
+
+    public async Task<bool> UnfollowPlayerAsync(string username)
+    {
+        _ratelimitController.Consume("api/account", false);
+
+        var request = GetRequestScaffold($"api/rel/unfollow/{username}");
+        var response = await SendRequest(request, HttpMethod.Post);
+        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+    }
+
+    public async Task<bool> BlockPlayerAsync(string username)
+    {
+        _ratelimitController.Consume("api/account", false);
+
+        var request = GetRequestScaffold($"api/rel/block/{username}");
+        var response = await SendRequest(request, HttpMethod.Post);
+        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+    }
+
+    public async Task<bool> UnblockPlayerAsync(string username)
+    {
+        _ratelimitController.Consume("api/account", false);
+
+        var request = GetRequestScaffold($"api/rel/unblock/{username}");
+        var response = await SendRequest(request, HttpMethod.Post);
+        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+    }
 }
