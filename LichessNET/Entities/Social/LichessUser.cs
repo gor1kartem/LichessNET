@@ -1,6 +1,7 @@
 ﻿using LichessNET.Entities.Enumerations;
+using LichessNET.Entities.Stats;
 
-namespace LichessNET.Entities;
+namespace LichessNET.Entities.Social;
 
 /// <summary>
 ///     The complete information of a lichess user.
@@ -12,12 +13,12 @@ public class LichessUser
     /// <summary>
     ///     User ID, often it is the Username written in lowercase
     /// </summary>
-    public string ID { get; set; }
+    public string Id { get; set; } = String.Empty;
 
     /// <summary>
     ///     The username of the user
     /// </summary>
-    public string Username { get; set; }
+    public string Username { get; set; } = "Anonymous";
 
     /// <summary>
     ///     If the data is fetched in the request, the ratings will be set here.
@@ -30,7 +31,7 @@ public class LichessUser
     /// </summary>
     public string? Flair { get; set; }
 
-    private ulong? createdAt { get; set; }
+    private ulong? CreatedAt { get; set; }
 
     /// <summary>
     ///     Will be set to true if the user profile is disabled
@@ -40,14 +41,14 @@ public class LichessUser
     /// <summary>
     ///     Will be set to true if the account is flagged for TOS violations
     /// </summary>
-    public bool? TOSViolation { get; set; }
+    public bool? TosViolation { get; set; }
 
     /// <summary>
     ///     The LichessProfile of the user
     /// </summary>
     public LichessProfile? Profile { get; set; }
 
-    private ulong? seenAt { get; set; }
+    private ulong? SeenAt { get; set; }
 
     /// <summary>
     ///     If set to true, this user is an active patron of lichess
@@ -80,13 +81,13 @@ public class LichessUser
             switch (title)
             {
                 case "CM":
-                    return Title.CM;
+                    return Title.Cm;
                 case "IM":
-                    return Title.IM;
+                    return Title.Im;
                 case "GM":
-                    return Title.GM;
+                    return Title.Gm;
                 case "LM":
-                    return Title.LM;
+                    return Title.Lm;
                 default:
                     return Title.None;
             }

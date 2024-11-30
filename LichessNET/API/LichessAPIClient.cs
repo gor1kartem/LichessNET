@@ -11,14 +11,14 @@ namespace LichessNET.API;
 ///     This class represents a client for the lichess API.
 ///     It handles all ratelimits and requests.
 /// </summary>
-public partial class LichessAPIClient
+public partial class LichessApiClient
 {
-    private readonly ILogger logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     ///     Bucket handler for ratelimits
     /// </summary>
-    private readonly APIRatelimitController ratelimitController = new();
+    private readonly ApiRatelimitController _ratelimitController = new();
 
     /// <summary>
     ///     The token to access the Lichess API
@@ -28,28 +28,28 @@ public partial class LichessAPIClient
     /// <summary>
     ///     Creates a lichess API client, according to settings
     /// </summary>
-    /// <param name="Token">The token for accessing the lichess API</param>
-    public LichessAPIClient(string Token = "")
+    /// <param name="token">The token for accessing the lichess API</param>
+    public LichessApiClient(string token = "")
     {
         var loggerFactory = LoggerFactory.Create(builder => builder
             .AddFilter(level => level >= LogLevel.Trace)
             .AddSpectreConsole());
 
-        logger = loggerFactory.CreateLogger("LichessAPIClient");
+        _logger = loggerFactory.CreateLogger("LichessAPIClient");
 
 
-        this.Token = Token;
-        if (Token != "")
-            logger.LogInformation("Connecting to Lichess API with token");
+        this.Token = token;
+        if (token != "")
+            _logger.LogInformation("Connecting to Lichess API with token");
         else
-            logger.LogInformation("Connecting to Lichess API without token");
+            _logger.LogInformation("Connecting to Lichess API without token");
 
-        if (!Token.Contains("_"))
-            logger.LogWarning("The token provided may not be a valid lichess API token. Please check the token.");
+        if (!token.Contains("_"))
+            _logger.LogWarning("The token provided may not be a valid lichess API token. Please check the token.");
 
-        logger.LogInformation("Connection to Lichess API established.");
+        _logger.LogInformation("Connection to Lichess API established.");
 
-        ratelimitController.RegisterBucket("api/account", TokenBuckets.Construct().WithCapacity(5)
+        _ratelimitController.RegisterBucket("api/account", TokenBuckets.Construct().WithCapacity(5)
             .WithFixedIntervalRefillStrategy(3, TimeSpan.FromSeconds(15)).Build());
     }
 
@@ -60,51 +60,51 @@ public partial class LichessAPIClient
     /// </summary>
     /// <param name="endpoint"></param>
     /// <returns></returns>
-    private UriBuilder GetUriBuilder(string endpoint, params Tuple<string, string>[] QueryParameters)
+    private UriBuilder GetUriBuilder(string endpoint, params Tuple<string, string>[] queryParameters)
     {
-        var builder = new UriBuilder(Constants.BASE_URL + endpoint);
+        var builder = new UriBuilder(Constants.BaseUrl + endpoint);
         builder.Port = -1;
 
         var query = HttpUtility.ParseQueryString(builder.Query);
 
-        foreach (var param in QueryParameters) query[param.Item1] = param.Item2;
+        foreach (var param in queryParameters) query[param.Item1] = param.Item2;
 
         builder.Query = query.ToString();
 
         return builder;
     }
 
-    private HttpRequestMessage GetRequestScaffold(string endpoint, params Tuple<string, string>[] QueryParameters)
+    private HttpRequestMessage GetRequestScaffold(string endpoint, params Tuple<string, string>[] queryParameters)
     {
         var request = new HttpRequestMessage();
-        request.RequestUri = GetUriBuilder(endpoint, QueryParameters).Uri;
+        request.RequestUri = GetUriBuilder(endpoint, queryParameters).Uri;
         return request;
     }
 
     private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, HttpMethod method = null)
     {
         if (method == null) method = HttpMethod.Get;
-        ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
+        _ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
         var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        logger.LogInformation("Sending request to " + request.RequestUri);
+        _logger.LogInformation("Sending request to " + request.RequestUri);
         var response = client.SendAsync(request).Result;
         if (response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Request to " + request.RequestUri + " successful.");
-            logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
+            _logger.LogInformation("Request to " + request.RequestUri + " successful.");
+            _logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
             return response;
         }
 
         if (response.StatusCode == HttpStatusCode.TooManyRequests)
         {
-            logger.LogError("Ratelimited by Lichess API. Waiting for 60 seconds.");
-            ratelimitController.ReportBlock();
+            _logger.LogError("Ratelimited by Lichess API. Waiting for 60 seconds.");
+            _ratelimitController.ReportBlock();
             return null;
         }
 
-        logger.LogError("Error while fetching data from Lichess API. Status code: " + response.StatusCode);
-        logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
+        _logger.LogError("Error while fetching data from Lichess API. Status code: " + response.StatusCode);
+        _logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
         return null;
     }
 }

@@ -3,5 +3,5 @@
 public class MoveSequence
 {
     public List<Move> Moves { get; set; } = new List<Move>();
-    public string OriginalPGN { get; set; }
+    public string OriginalPgn { get; set; }
 }

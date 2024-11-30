@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using LichessNET.Entities.Enumerations;
+﻿using LichessNET.Entities.Enumerations;
 
 namespace LichessNET.Entities.Game;
 
@@ -7,11 +6,11 @@ public class Game
 {
     public Dictionary<string, string> AdditionalData = new Dictionary<string, string>();
     public string Event { get; set; }
-    public string URL { get; set; }
+    public string Url { get; set; }
     public GamePlayer White { get; set; }
     public GamePlayer Black { get; set; }
     public GameResult Result { get; set; }
-    public string ECO { get; set; }
+    public string Eco { get; set; }
     public string Opening { get; set; }
 
     public MoveSequence Moves { get; set; }
@@ -21,7 +20,7 @@ public class Game
     /// </summary>
     /// <param name="pgn">The PGN string representing the chess game, containing headers and move information.</param>
     /// <returns>A Game object initialized with data extracted from the PGN string, such as players, result, and moves.</returns>
-    public static Game FromPGN(string pgn)
+    public static Game FromPgn(string pgn)
     {
         var game = new Game();
         var lines = pgn.Split('\n');
@@ -69,7 +68,7 @@ public class Game
                             game.Result = GameResult.Stalemate;
                         break;
                     case "eco":
-                        game.ECO = value;
+                        game.Eco = value;
                         break;
                     case "opening":
                         game.Opening = value;
@@ -81,7 +80,7 @@ public class Game
             }
             else // Moves
             {
-                game.Moves.OriginalPGN = line;
+                game.Moves.OriginalPgn = line;
                 var moveTokens =
                     System.Text.RegularExpressions.Regex.Split(line, @"(\d+\.\s+|\s+1-0|\s+0-1|\s+1/2-1/2)");
                 foreach (var token in moveTokens)
@@ -101,7 +100,7 @@ public class Game
                         {
                             Notation = notation,
                             MoveNumber = game.Moves.Moves.Count / 2 + 1,
-                            isWhite = game.Moves.Moves.Count % 2 == 0
+                            IsWhite = game.Moves.Moves.Count % 2 == 0
                         };
 
                         if (!string.IsNullOrEmpty(info))

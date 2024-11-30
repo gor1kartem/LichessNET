@@ -2,9 +2,9 @@
 
 public enum Title
 {
-    CM,
-    IM,
-    GM,
-    LM,
+    Cm,
+    Im,
+    Gm,
+    Lm,
     None
 }

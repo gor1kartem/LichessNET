@@ -4,7 +4,7 @@ namespace LichessNET;
 
 internal class Constants
 {
-    public const string BASE_URL = "https://lichess.org/";
+    public const string BaseUrl = "https://lichess.org/";
 
 #if DEBUG
     public static LogLevel MinimumLogLevel = LogLevel.Trace;

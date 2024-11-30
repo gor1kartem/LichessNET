@@ -1,9 +1,9 @@
-﻿using LichessNET.Entities;
+﻿using LichessNET.Entities.Social;
 using Newtonsoft.Json;
 
 namespace LichessNET.API;
 
-public partial class LichessAPIClient
+public partial class LichessApiClient
 {
     /// <summary>
     ///     Retrieves the real-time status of a specified user on Lichess.
@@ -34,7 +34,7 @@ public partial class LichessAPIClient
     public async Task<List<UserRealTimeStatus>> GetRealTimeUserStatus(IEnumerable<string> ids, bool withSignal = false,
         bool withGameIds = false, bool withGameMetas = false)
     {
-        ratelimitController.Consume();
+        _ratelimitController.Consume();
 
         var request = GetRequestScaffold("api/users/status",
             Tuple.Create("ids", string.Join(",", ids)),

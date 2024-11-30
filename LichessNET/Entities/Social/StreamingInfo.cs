@@ -1,4 +1,4 @@
-﻿namespace LichessNET.Entities;
+﻿namespace LichessNET.Entities.Social;
 
 public class StreamingInfo
 {

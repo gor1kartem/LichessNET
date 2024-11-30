@@ -1,4 +1,4 @@
-﻿namespace LichessNET.Entities;
+﻿namespace LichessNET.Entities.Social;
 
 /// <summary>
 ///     This class contains all information of the public profile of a lichess user

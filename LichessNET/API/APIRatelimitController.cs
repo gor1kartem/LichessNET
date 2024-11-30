@@ -4,26 +4,31 @@ using Vertical.SpectreLogger;
 
 namespace LichessNET.API;
 
-public class APIRatelimitController
+/// <summary>
+/// The APIRatelimitController class manages and enforces rate limiting
+/// for API requests to prevent abuse and ensure fair usage of system resources.
+/// </summary>
+public class ApiRatelimitController
 {
-    private static ILogger logger;
+    private static ILogger _logger = null!;
 
-    private readonly Dictionary<string, ITokenBucket> buckets = new();
+    private readonly Dictionary<string, ITokenBucket> _buckets = new();
 
-    private readonly ITokenBucket defaultBucket = TokenBuckets.Construct().WithCapacity(5)
+    private readonly ITokenBucket _defaultBucket = TokenBuckets.Construct().WithCapacity(5)
         .WithFixedIntervalRefillStrategy(5, TimeSpan.FromSeconds(15)).Build();
 
     private int _pipedRequests;
 
-    private DateTime RateLimitedUntil = DateTime.MinValue;
+    private DateTime _rateLimitedUntil = DateTime.MinValue;
 
-    public APIRatelimitController()
+    public ApiRatelimitController()
     {
         var loggerFactory = LoggerFactory.Create(builder => builder
             .AddSpectreConsole());
 
-        logger = loggerFactory.CreateLogger("APIRateLimitController");
+        _logger = loggerFactory.CreateLogger("APIRateLimitController");
     }
+
 
     public int PipedRequests
     {
@@ -32,48 +37,48 @@ public class APIRatelimitController
         {
             _pipedRequests = value;
             if (PipedRequests > 5)
-                logger.LogWarning(
+                _logger.LogWarning(
                     $"Currently there are {PipedRequests} requests in queue. Either the API is blocking requests, or the client is sending too many requests.");
         }
     }
 
     public void ReportBlock(int seconds = 60)
     {
-        logger.LogWarning("API Call reported Ratelimit block for " + seconds + " seconds");
-        RateLimitedUntil = DateTime.Now.AddSeconds(seconds);
+        _logger.LogWarning("API Call reported Ratelimit block for " + seconds + " seconds");
+        _rateLimitedUntil = DateTime.Now.AddSeconds(seconds);
     }
 
-    public void RegisterBucket(string EndpointURL, ITokenBucket bucket)
+    public void RegisterBucket(string endpointUrl, ITokenBucket bucket)
     {
-        buckets.Add(EndpointURL, bucket);
+        _buckets.Add(endpointUrl, bucket);
     }
 
     public void Consume()
     {
         PipedRequests++;
-        if (RateLimitedUntil > DateTime.Now)
+        if (_rateLimitedUntil > DateTime.Now)
         {
-            logger.LogWarning("Endpoint blocked due to ratelimit. Waiting for " +
-                              (RateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
-            Thread.Sleep((RateLimitedUntil - DateTime.Now).Milliseconds);
+            _logger.LogWarning("Endpoint blocked due to ratelimit. Waiting for " +
+                               (_rateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
+            Thread.Sleep((_rateLimitedUntil - DateTime.Now).Milliseconds);
         }
 
-        defaultBucket.Consume();
+        _defaultBucket.Consume();
         PipedRequests--;
     }
 
-    public void Consume(string EndpointURL, bool consumedefaultBucket)
+    public void Consume(string endpointUrl, bool consumedefaultBucket)
     {
         PipedRequests++;
-        if (RateLimitedUntil > DateTime.Now)
+        if (_rateLimitedUntil > DateTime.Now)
         {
-            logger.LogWarning("Endpoint call to " + EndpointURL + " blocked due to ratelimit. Waiting for " +
-                              (RateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
-            Thread.Sleep((RateLimitedUntil - DateTime.Now).Milliseconds);
+            _logger.LogWarning("Endpoint call to " + endpointUrl + " blocked due to ratelimit. Waiting for " +
+                               (_rateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
+            Thread.Sleep((_rateLimitedUntil - DateTime.Now).Milliseconds);
         }
 
-        if (consumedefaultBucket) defaultBucket.Consume();
-        if (buckets.ContainsKey(EndpointURL)) buckets[EndpointURL].Consume();
+        if (consumedefaultBucket) _defaultBucket.Consume();
+        if (_buckets.TryGetValue(endpointUrl, out var bucket)) bucket.Consume();
 
         PipedRequests--;
     }

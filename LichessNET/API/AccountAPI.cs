@@ -1,10 +1,11 @@
 ﻿using LichessNET.Entities;
 using LichessNET.Entities.Account;
+using LichessNET.Entities.Social;
 using Newtonsoft.Json;
 
 namespace LichessNET.API;
 
-public partial class LichessAPIClient
+public partial class LichessApiClient
 {
     /// <summary>
     ///     Retrieves the email address of the authenticated user.
@@ -14,7 +15,7 @@ public partial class LichessAPIClient
     /// </returns>
     public async Task<string> GetAccountEmail()
     {
-        ratelimitController.Consume("api/account", false);
+        _ratelimitController.Consume("api/account", false);
 
         var request = GetRequestScaffold("api/account/email");
 
@@ -25,9 +26,15 @@ public partial class LichessAPIClient
         return emailResponse.email.ToObject<string>();
     }
 
+    /// <summary>
+    /// Retrieves the profile information of the authenticated user from the Lichess platform.
+    /// </summary>
+    /// <returns>
+    /// An instance of <see cref="LichessUser"/> representing the profile details of the user.
+    /// </returns>
     public async Task<LichessUser> GetOwnProfile()
     {
-        ratelimitController.Consume("api/account", false);
+        _ratelimitController.Consume("api/account", false);
 
         var request = GetRequestScaffold("api/account");
         var response = await SendRequest(request);
@@ -35,9 +42,15 @@ public partial class LichessAPIClient
         return JsonConvert.DeserializeObject<LichessUser>(content);
     }
 
+    /// <summary>
+    /// Retrieves the account preferences of the authenticated user.
+    /// </summary>
+    /// <returns>
+    /// An instance of <see cref="AccountPreferences"/> representing the user's account preferences.
+    /// </returns>
     public async Task<AccountPreferences> GetAccountPreferences()
     {
-        ratelimitController.Consume("api/account", false);
+        _ratelimitController.Consume("api/account", false);
 
         var request = GetRequestScaffold("api/account/preferences");
 
@@ -57,7 +70,7 @@ public partial class LichessAPIClient
     /// </returns>
     public async Task<bool> GetKidModeStatus()
     {
-        ratelimitController.Consume("api/account", false);
+        _ratelimitController.Consume("api/account", false);
 
         var request = GetRequestScaffold("api/account/kid");
 
@@ -68,9 +81,18 @@ public partial class LichessAPIClient
         return kidModeStatus;
     }
 
+    /// <summary>
+    /// Sets the kid mode status for the authenticated account.
+    /// </summary>
+    /// <param name="enable">
+    /// A boolean value indicating whether to enable or disable kid mode.
+    /// </param>
+    /// <returns>
+    /// A boolean indicating whether the operation was successful.
+    /// </returns>
     public async Task<bool> SetKidModeStatus(bool enable)
     {
-        ratelimitController.Consume("api/account", false);
+        _ratelimitController.Consume("api/account", false);
 
         var request = GetRequestScaffold("api/account/kid", Tuple.Create("v", enable.ToString()));
         var response = await SendRequest(request, HttpMethod.Post);
