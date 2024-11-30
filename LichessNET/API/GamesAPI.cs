@@ -52,4 +52,45 @@ public partial class LichessApiClient
 
         return list;
     }
+
+    /// <summary>
+    /// Retrieves a list of chess games that have been imported to the Lichess platform.
+    /// </summary>
+    /// <returns>A list of imported chess games.</returns>
+    public async Task<List<Game>> GetImportedGamesAsync()
+    {
+        var request = GetRequestScaffold("api/games/export/import");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var list = new List<Game>();
+
+        var gamepgns = content.Split("\n\n\n");
+        foreach (var gamepgn in gamepgns)
+        {
+            try
+            {
+                if (gamepgn.Length < 10) continue;
+                list.Add(Game.FromPgn(gamepgn.Trim()));
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Failed to parse a pgn: " + gamepgn);
+                throw;
+            }
+        }
+
+        return list;
+    }
+
+
+    /// <summary>
+    /// Initializes a real-time stream of a chess game using its unique identifier from the Lichess API.
+    /// </summary>
+    /// <param name="gameId">The unique identifier of the game to stream.</param>
+    /// <returns>A GameStream object that provides updates as the game progresses.</returns>
+    public async Task<GameStream> GetGameStreamAsync(string gameId)
+    {
+        return new GameStream(gameId);
+    }
 }

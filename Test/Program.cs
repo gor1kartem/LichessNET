@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using LichessNET.API;
 using LichessNET.Entities.Enumerations;
+using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var status = await client.GetLeaderboardAsync(10, Gamemode.Bullet);
-Console.WriteLine(JsonSerializer.Serialize(status, new JsonSerializerOptions
-{
-    WriteIndented = true
-}));
-Thread.Sleep(1000);
+var stream = new GameStream("e8ADz6ls");
+
+stream.OnMoveMade += (o, m) => { Console.WriteLine($"Move {m.MoveNumber}: {m.Notation}"); };
+
+await Task.Delay(-1);
