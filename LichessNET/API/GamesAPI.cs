@@ -1,5 +1,7 @@
 ﻿using LichessNET.Entities.Game;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LichessNET.API;
 
@@ -11,6 +13,8 @@ public partial class LichessApiClient
     /// <param name="gameId">The unique identifier of the game to retrieve.</param>
     public async Task<Game> GetGameAsync(string gameId)
     {
+        _ratelimitController.Consume();
+
         var request = GetRequestScaffold("game/export/" + gameId);
 
         var response = await SendRequest(request);
@@ -27,6 +31,8 @@ public partial class LichessApiClient
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of games.</returns>
     public async Task<List<Game>> GetGamesAsync(string username, int max = 10)
     {
+        _ratelimitController.Consume();
+
         var request = GetRequestScaffold("api/games/user/" + username,
             Tuple.Create("max", max.ToString()));
 
@@ -59,6 +65,8 @@ public partial class LichessApiClient
     /// <returns>A list of imported chess games.</returns>
     public async Task<List<Game>> GetImportedGamesAsync()
     {
+        _ratelimitController.Consume();
+
         var request = GetRequestScaffold("api/games/export/import");
         var response = await SendRequest(request);
         var content = await response.Content.ReadAsStringAsync();
@@ -92,5 +100,24 @@ public partial class LichessApiClient
     public async Task<GameStream> GetGameStreamAsync(string gameId)
     {
         return new GameStream(gameId);
+    }
+
+    /// <summary>
+    /// Fetches the ongoing games for the current user.
+    /// </summary>
+    /// <param name="maxGames">The maximum number of ongoing games to fetch (default is 9, max 50).</param>
+    /// <returns>A list of OngoingGame objects representing the current ongoing games.</returns>
+    public async Task<List<OngoingGame>> GetOngoingGamesAsync(int maxGames = 9)
+    {
+        _ratelimitController.Consume("api/account", false);
+
+        if (maxGames < 1 || maxGames > 50)
+            throw new ArgumentOutOfRangeException(nameof(maxGames), "The number of games must be between 1 and 50.");
+
+        var request = GetRequestScaffold("api/account/playing", Tuple.Create("nb", maxGames.ToString()));
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+        var jobj = JsonConvert.DeserializeObject<JObject>(content);
+        return jobj["nowPlaying"].ToObject<List<OngoingGame>>();
     }
 }

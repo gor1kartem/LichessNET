@@ -66,7 +66,7 @@ public class GameStream
             {
                 Notation = data["lm"].ToString(),
                 IsWhite = data["fen"].ToString().EndsWith("w"),
-                MoveNumber = (Turns + Moves.Count()) / 2
+                MoveNumber = ((Turns + Moves.Count()) / 2) + 1
             });
             OnMoveMade?.Invoke(this, Moves[^1]);
         }
