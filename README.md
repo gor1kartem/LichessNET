@@ -32,7 +32,7 @@ You can install LichessNET via NuGet.
 - [x] Downloading games by User
 - [x] Live updating chess games
 - [x] Managing follows
-- [ ] Get ongoing games
+- [x] Get ongoing games
 - [ ] Upload games to lichess
 - [ ] Lichess TV
 - [ ] Get puzzles
