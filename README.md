@@ -23,3 +23,37 @@ You can install LichessNET via NuGet.
 | ![NuGet Downloads](https://img.shields.io/nuget/dt/LichessNET)  | ![NuGet Version](https://img.shields.io/nuget/v/LichessNET)  |
 
 
+## Currently supported Endpoints:
+- [x] Fetching account data
+- [x] Changing account settings
+- [x] Fetch user profiles
+- [x] Leaderboards
+- [x] Downloading games by ID
+- [x] Downloading games by User
+- [x] Live updating chess games
+- [x] Managing follows
+- [ ] Get ongoing games
+- [ ] Upload games to lichess
+- [ ] Lichess TV
+- [ ] Get puzzles
+- [ ] Joining/Leaving a team
+- [ ] Managing Team
+- [ ] Board events streaming
+- [ ] Queue for game
+- [ ] Chatting
+- [ ] Game management
+- [ ] Bot endpoints
+- [ ] Challenge management
+- [ ] Bulk pairings
+- [ ] Arena tournaments
+- [ ] Swiss tournaments
+- [ ] Get current simuls
+- [ ] Export studies
+- [ ] Manage studies
+- [ ] Send a private message
+- [ ] Broadcasts
+- [ ] Cloud evaluation access
+- [ ] External engine
+- [ ] Opening explorer
+- [ ] Tablebases
+- [ ] OAuth2 (?)
