@@ -150,4 +150,25 @@ public partial class LichessApiClient
 
         return crossTable;
     }
+
+    public async Task<LichessUser> GetUserProfile(string username)
+    {
+        //NOTE: The problem is, that lichess will provide matchup if the query parameter is provided.
+        //This means, that we cannot just use the query parameter, but we have to check if the matchup is provided in the response.
+
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/user/{username}";
+        var request = GetRequestScaffold(endpoint);
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+        var json = JObject.Parse(content);
+
+
+        LichessUser user = json.ToObject<LichessUser>();
+        user.Ratings = LichessUser.DeserializeRatings(json["perfs"]);
+
+
+        return user;
+    }
 }

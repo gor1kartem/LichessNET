@@ -6,12 +6,13 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageTags>lichess api</PackageTags>
-        <Version>0.0.3</Version>
+        <Version>0.1.0</Version>
         <Description>This is still in heavy development, and by far not really functional. 
             It currently can access all user endpoints of Lichess with a token.
         </Description>
         <PackageIcon>lichessnet.jpg</PackageIcon>
         <RepositoryUrl>https://github.com/Rabergsel/LichessNET/tree/master</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Rabergsel/LichessNET</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>

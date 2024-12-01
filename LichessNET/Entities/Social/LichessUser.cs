@@ -1,5 +1,6 @@
 ﻿using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Stats;
+using Newtonsoft.Json.Linq;
 
 namespace LichessNET.Entities.Social;
 
@@ -24,7 +25,7 @@ public class LichessUser
     ///     If the data is fetched in the request, the ratings will be set here.
     ///     The dictionary only contains those gamemodes as key, which were fetched.
     /// </summary>
-    public IReadOnlyDictionary<Gamemode, GamemodeStats>? Ratings { get; set; }
+    public Dictionary<Gamemode, GamemodeStats>? Ratings { get; set; }
 
     /// <summary>
     ///     Current flair of the user
@@ -104,10 +105,6 @@ public class LichessUser
     /// </summary>
     public bool? Streaming { get; set; }
 
-    /// <summary>
-    ///     The streaming information about the user (channels, etc.)
-    /// </summary>
-    public StreamingInfo? Streamer { get; set; }
 
     /// <summary>
     ///     Set to true if the user allows being followed
@@ -128,4 +125,33 @@ public class LichessUser
     ///     Set to true if the user follows the user represented by the LichessClient
     /// </summary>
     public bool? FollowsYou { get; set; }
+
+    public static Dictionary<Gamemode, GamemodeStats> DeserializeRatings(JToken json)
+    {
+        var dictionary = new Dictionary<Gamemode, GamemodeStats>();
+
+        foreach (var perf in json.ToObject<Dictionary<string, GamemodeStats>>())
+        {
+            switch (perf.Key.ToLower())
+            {
+                case "bullet": dictionary.Add(Gamemode.Bullet, perf.Value); break;
+                case "blitz": dictionary.Add(Gamemode.Blitz, perf.Value); break;
+                case "rapid": dictionary.Add(Gamemode.Rapid, perf.Value); break;
+                case "classical": dictionary.Add(Gamemode.Classical, perf.Value); break;
+                case "atomic": dictionary.Add(Gamemode.Atomic, perf.Value); break;
+                case "antichess": dictionary.Add(Gamemode.Antichess, perf.Value); break;
+                case "chess960": dictionary.Add(Gamemode.Chess960, perf.Value); break;
+                case "kingofthehill": dictionary.Add(Gamemode.KingOfTheHill, perf.Value); break;
+                case "threecheck": dictionary.Add(Gamemode.ThreeCheck, perf.Value); break;
+                case "horde": dictionary.Add(Gamemode.Horde, perf.Value); break;
+                case "racingkings": dictionary.Add(Gamemode.RacingKings, perf.Value); break;
+                case "crazyhouse": dictionary.Add(Gamemode.Crazyhouse, perf.Value); break;
+                case "storm": dictionary.Add(Gamemode.Storm, perf.Value); break;
+                case "racer": dictionary.Add(Gamemode.Racer, perf.Value); break;
+                case "streak": dictionary.Add(Gamemode.Streak, perf.Value); break;
+            }
+        }
+
+        return dictionary;
+    }
 }
