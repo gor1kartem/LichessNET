@@ -1,5 +1,8 @@
 ﻿namespace LichessNET.Entities.Game;
 
+/// <summary>
+/// Represents an ongoing game in Lichess.
+/// </summary>
 public class OngoingGame
 {
     public string GameId { get; set; }
@@ -15,4 +18,5 @@ public class OngoingGame
     public int SecondsLeft { get; set; }
     public string Source { get; set; }
     public string Speed { get; set; }
+    public Variant Variant { get; set; }
 }

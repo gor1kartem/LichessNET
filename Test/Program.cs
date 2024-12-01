@@ -4,23 +4,6 @@ using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
+var puzzle = await client.GetDailyPuzzle();
 
-GameStream stream;
-
-while (true)
-{
-    var ongoing = await client.GetOngoingGamesAsync();
-    if (ongoing.Count > 0)
-    {
-        stream = await client.GetGameStreamAsync(ongoing[0].GameId);
-        Console.WriteLine("Game found!");
-        break;
-    }
-
-    Console.WriteLine("No ongoing games");
-    await Task.Delay(5000);
-}
-
-stream.OnMoveMade += (sender, move) => { Console.WriteLine($"Move {move.MoveNumber}: {move.Notation}"); };
-
-await Task.Delay(-1);
+Console.WriteLine($"Puzzle {puzzle.id} from {puzzle.Game.Id}: {puzzle.Plays} plays");
