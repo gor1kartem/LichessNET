@@ -24,4 +24,30 @@ public partial class LichessApiClient
         puzzle.Game = jobj["game"].ToObject<PuzzleGame>();
         return puzzle;
     }
+
+    public async Task<Puzzle> GetRandomPuzzle()
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold("api/puzzle/next");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+        var jobj = JsonConvert.DeserializeObject<JObject>(content);
+        var puzzle = jobj["puzzle"].ToObject<Puzzle>();
+        puzzle.Game = jobj["game"].ToObject<PuzzleGame>();
+        return puzzle;
+    }
+
+    public async Task<Puzzle> GetPuzzleByID(string id)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/puzzle/{id}");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+        var jobj = JsonConvert.DeserializeObject<JObject>(content);
+        var puzzle = jobj["puzzle"].ToObject<Puzzle>();
+        puzzle.Game = jobj["game"].ToObject<PuzzleGame>();
+        return puzzle;
+    }
 }

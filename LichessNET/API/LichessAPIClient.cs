@@ -81,12 +81,17 @@ public partial class LichessApiClient
         return request;
     }
 
-    private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, HttpMethod method = null)
+    private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, HttpMethod method = null,
+        bool useToken = true)
     {
         if (method == null) method = HttpMethod.Get;
         _ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
         var client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        if (useToken & Token != "")
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        }
+
         _logger.LogInformation("Sending request to " + request.RequestUri);
         var response = client.SendAsync(request).Result;
         if (response.IsSuccessStatusCode)
@@ -101,6 +106,20 @@ public partial class LichessApiClient
             _logger.LogError("Ratelimited by Lichess API. Waiting for 60 seconds.");
             _ratelimitController.ReportBlock();
             return null;
+        }
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            if ((await response.Content.ReadAsStringAsync()).Contains("Missing scope"))
+            {
+                _logger.LogError(
+                    "The token provided does not have the required scope to access this endpoint. The client will " +
+                    "resend a request without a token.");
+                return await SendRequest(new HttpRequestMessage()
+                {
+                    RequestUri = request.RequestUri
+                }, method, false);
+            }
         }
 
         _logger.LogError("Error while fetching data from Lichess API. Status code: " + response.StatusCode);
