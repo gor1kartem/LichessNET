@@ -39,4 +39,17 @@ public partial class LichessApiClient
 
         return teams;
     }
+
+    public async Task<List<TeamMember>> GetTeamMembersAsync(string teamId)
+    {
+        _ratelimitController.Consume();
+        var request = GetRequestScaffold($"api/team/{teamId}/users");
+
+        var response = await SendRequest(request);
+
+        var content = await response.Content.ReadAsStringAsync();
+        var members = JsonConvert.DeserializeObject<List<TeamMember>>(content);
+
+        return members;
+    }
 }
