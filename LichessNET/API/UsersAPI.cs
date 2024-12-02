@@ -112,6 +112,15 @@ public partial class LichessApiClient
         return users;
     }
 
+    /// <summary>
+    /// Retrieves the cross table for two specified users, summarizing the results of their games.
+    /// </summary>
+    /// <param name="user1">The ID of the first user in the cross table.</param>
+    /// <param name="user2">The ID of the second user in the cross table.</param>
+    /// <param name="includeMatchup">Optional parameter to include current matchup details if available.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing the cross table data for the two users.
+    /// </returns>
     public async Task<CrossTable> GetCrossTableAsync(string user1, string user2, bool includeMatchup = false)
     {
         //NOTE: The problem is, that lichess will provide matchup if the query parameter is provided.
@@ -151,6 +160,13 @@ public partial class LichessApiClient
         return crossTable;
     }
 
+    /// <summary>
+    /// Retrieves the profile of a specified user on Lichess.
+    /// </summary>
+    /// <param name="username">The username of the user whose profile is to be retrieved.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing the user's profile.
+    /// </returns>
     public async Task<LichessUser> GetUserProfile(string username)
     {
         //NOTE: The problem is, that lichess will provide matchup if the query parameter is provided.

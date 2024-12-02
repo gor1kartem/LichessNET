@@ -4,7 +4,6 @@ using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
-var puzzle = await client.GetRandomPuzzle();
-puzzle = await client.GetRandomPuzzle();
+var puzzle = await client.GetTeamOfUserAsync("thibault");
 
 Console.WriteLine(JsonSerializer.Serialize(puzzle, new JsonSerializerOptions { WriteIndented = true }));

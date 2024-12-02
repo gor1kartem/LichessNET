@@ -25,6 +25,12 @@ public partial class LichessApiClient
         return puzzle;
     }
 
+    /// <summary>
+    /// Fetches a random chess puzzle from the Lichess API.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Puzzle"/> object representing the random chess puzzle, including its associated game details.
+    /// </returns>
     public async Task<Puzzle> GetRandomPuzzle()
     {
         _ratelimitController.Consume();
@@ -38,6 +44,11 @@ public partial class LichessApiClient
         return puzzle;
     }
 
+    /// <summary>
+    /// Retrieves a specific chess puzzle from the Lichess API using its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the puzzle to retrieve.</param>
+    /// <returns>A <see cref="Puzzle"/> object containing the details of the requested puzzle, including its game data and solution themes.</returns>
     public async Task<Puzzle> GetPuzzleByID(string id)
     {
         _ratelimitController.Consume();
