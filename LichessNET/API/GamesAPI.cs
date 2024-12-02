@@ -91,6 +91,71 @@ public partial class LichessApiClient
         return list;
     }
 
+    /// <summary>
+    /// Retrieves a list of chess games from a specified arena using the provided arena identifier.
+    /// </summary>
+    /// <param name="ArenaID">The unique identifier of the arena from which to retrieve the games.</param>
+    /// <returns>A task representing the asynchronous operation that returns a list of games retrieved from the specified arena.</returns>
+    public async Task<List<Game>> GetArenaGames(string ArenaID)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/tournament/{ArenaID}/games");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var list = new List<Game>();
+
+        var gamepgns = content.Split("\n\n\n");
+        foreach (var gamepgn in gamepgns)
+        {
+            try
+            {
+                if (gamepgn.Length < 10) continue;
+                list.Add(Game.FromPgn(gamepgn.Trim()));
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Failed to parse a pgn: " + gamepgn);
+                throw;
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Retrieves a list of games from a Swiss tournament using the Swiss ID from the Lichess API.
+    /// </summary>
+    /// <param name="SwissID">The unique identifier of the Swiss tournament to retrieve games from.</param>
+    /// <returns>A task representing the asynchronous operation, with a list of Swiss tournament games as the result.</returns>
+    public async Task<List<Game>> GetSwissGames(string SwissID)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/swiss/{SwissID}/games");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var list = new List<Game>();
+
+        var gamepgns = content.Split("\n\n\n");
+        foreach (var gamepgn in gamepgns)
+        {
+            try
+            {
+                if (gamepgn.Length < 10) continue;
+                list.Add(Game.FromPgn(gamepgn.Trim()));
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Failed to parse a pgn: " + gamepgn);
+                throw;
+            }
+        }
+
+        return list;
+    }
 
     /// <summary>
     /// Initializes a real-time stream of a chess game using its unique identifier from the Lichess API.

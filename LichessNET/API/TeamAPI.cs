@@ -12,6 +12,7 @@ public partial class LichessApiClient
     /// <returns>The team with the specified ID</returns>
     public async Task<LichessTeam> GetTeamAsync(string teamId)
     {
+        _ratelimitController.Consume();
         var request = GetRequestScaffold($"api/team/{teamId}");
         var response = await SendRequest(request);
 
@@ -28,6 +29,8 @@ public partial class LichessApiClient
     /// <returns>A list of teams that the specified user is in</returns>
     public async Task<List<LichessTeam>> GetTeamOfUserAsync(string username)
     {
+        _ratelimitController.Consume();
+
         var request = GetRequestScaffold($"api/team/of/{username}");
         var response = await SendRequest(request);
 
