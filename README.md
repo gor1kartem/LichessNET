@@ -7,6 +7,7 @@
 | ![GitHub forks](https://img.shields.io/github/forks/rabergsel/LichessNET?style=for-the-badge)  | ![GitHub Repo stars](https://img.shields.io/github/stars/rabergsel/LichessNET?style=for-the-badge)  |
 
 
+[![Doxygen Action](https://github.com/Rabergsel/LichessNET/actions/workflows/main.yml/badge.svg)](https://github.com/Rabergsel/LichessNET/actions/workflows/main.yml)
 
 
 
