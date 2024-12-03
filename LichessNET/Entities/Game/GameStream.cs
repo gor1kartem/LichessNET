@@ -3,7 +3,28 @@ using Newtonsoft.Json.Linq;
 
 namespace LichessNET.Entities.Game;
 
+/// <summary>
+/// Represents a stream for a Lichess game, handling real-time updates of moves and game information.
+/// Initializes a game stream and listens for game updates from the Lichess API.
+/// </summary>
+/// <example>
+/// The following example shows how to create a game stream and listen for move updates.
+/// <code>
+/// async Task ExampleUsage()
+/// {
+///     var client = new LichessApiClient();
+///     var gameStream = await client.GetGameStreamAsync("someGameId");
+///     
+///     // Add an event handler to write the last move to the console
+///     gameStream.OnMoveMade += (sender, move) =>
+///     {
+///         Console.WriteLine($"Last move: {move.Notation}");
+///     };
+/// }
+/// </code>
+/// </example>
 public class GameStream
+
 {
     // Define a delegate for the event
     public delegate void MoveUpdateHandler(object sender, Move move);

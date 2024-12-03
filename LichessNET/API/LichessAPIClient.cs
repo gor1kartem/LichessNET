@@ -11,7 +11,15 @@ namespace LichessNET.API;
 ///     This class represents a client for the lichess API.
 ///     It handles all ratelimits and requests.
 /// </summary>
+/// <example>
+///     This example shows how to initialize the LichessAPIClient.
+///     <code>
+///     var client = new LichessApiClient("YOUR_API_TOKEN");
+///     Console.WriteLine($"User is part of {team.Count} teams.");
+///     </code>
+/// </example>
 public partial class LichessApiClient
+
 {
     private readonly ILogger _logger;
 
@@ -32,7 +40,7 @@ public partial class LichessApiClient
     public LichessApiClient(string token = "")
     {
         var loggerFactory = LoggerFactory.Create(builder => builder
-            .AddFilter(level => level >= LogLevel.Trace)
+            .SetMinimumLevel(Constants.MinimumLogLevel)
             .AddSpectreConsole());
 
         _logger = loggerFactory.CreateLogger("LichessAPIClient");
@@ -97,7 +105,7 @@ public partial class LichessApiClient
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("Request to " + request.RequestUri + " successful.");
-            _logger.LogInformation("Response: \n" + response.Content.ReadAsStringAsync().Result);
+            _logger.LogDebug("Response: \n" + response.Content.ReadAsStringAsync().Result);
             return response;
         }
 

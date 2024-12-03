@@ -40,6 +40,12 @@ public partial class LichessApiClient
         return teams;
     }
 
+    /// <summary>
+    /// This funciton gets the members of a team, in chronoclogical order of joining the team. (Latest first),
+    /// with up to 5000 members.
+    /// </summary>
+    /// <param name="teamId">ID of the Team</param>
+    /// <returns></returns>
     public async Task<List<TeamMember>> GetTeamMembersAsync(string teamId)
     {
         _ratelimitController.Consume();

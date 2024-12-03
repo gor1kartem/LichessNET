@@ -1,5 +1,8 @@
 ﻿namespace LichessNET.Entities.Teams;
 
+/// <summary>
+/// Represents a member of a Lichess team.
+/// </summary>
 public class TeamMember
 {
     public string ID { get; set; } = null!;

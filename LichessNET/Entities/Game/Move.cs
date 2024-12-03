@@ -1,5 +1,8 @@
 ﻿namespace LichessNET.Entities.Game;
 
+/// <summary>
+/// A move in a chess game, read from a PGN file.
+/// </summary>
 public class Move
 {
     public int MoveNumber { get; set; }

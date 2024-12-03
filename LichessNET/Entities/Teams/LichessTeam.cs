@@ -2,6 +2,9 @@
 
 namespace LichessNET.Entities.Teams;
 
+/// <summary>
+/// Represents a team on Lichess, containing information such as its ID, name, description, and members.
+/// </summary>
 public class LichessTeam
 {
     public string Id { get; set; }

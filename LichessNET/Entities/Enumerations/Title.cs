@@ -6,6 +6,7 @@
 public enum Title
 {
     Cm,
+    Nm,
     Im,
     Gm,
     Lm,
