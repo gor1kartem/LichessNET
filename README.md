@@ -7,7 +7,8 @@
 | ![GitHub forks](https://img.shields.io/github/forks/rabergsel/LichessNET?style=for-the-badge)  | ![GitHub Repo stars](https://img.shields.io/github/stars/rabergsel/LichessNET?style=for-the-badge)  |
 
 
-
+[![Doxygen Action](https://github.com/Rabergsel/LichessNET/actions/workflows/main.yml/badge.svg)](https://github.com/Rabergsel/LichessNET/actions/workflows/main.yml)
+## [Documentation](https://rabergsel.github.io/LichessNET/index.html)
 
 
 LichessNET is a C# library for interacting with the Lichess API. It provides functionalities to fetch and parse game data, user information, and other resources from the Lichess API.
