@@ -1,4 +1,5 @@
 ﻿using LichessNET.API;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace LichessNET.Entities.Game;
@@ -26,70 +27,94 @@ namespace LichessNET.Entities.Game;
 public class GameStream
 
 {
+    public delegate void GameInfoFetchedHandler(object sender, OngoingGame game);
+
     // Define a delegate for the event
     public delegate void MoveUpdateHandler(object sender, Move move);
 
+    private Dictionary<string, OngoingGame> _games = new Dictionary<string, OngoingGame>();
 
-    /// <summary>
-    /// Represents a game stream for a Lichess game, allowing real-time tracking of moves and game state.
-    /// </summary>
-    public GameStream(string id)
+    private LichessStream _stream;
+
+    public GameStream(HttpRequestMessage request, HttpMethod method)
     {
-        Stream = new LichessStream($"https://lichess.org/api/stream/game/{id}");
-        Stream.GameUpdateReceived += ProcessData;
-        Task.Run(async () => await Stream.StreamGameAsync());
+        _stream = new LichessStream(request, method);
+        _stream.GameUpdateReceived += ProcessData;
+        Task.Run(() => _stream.StreamGameAsync());
     }
 
-    public string initialFEN { get; set; } = "";
-    public string player { get; set; } = "";
-    public string lastMove { get; set; } = "";
-    public int Turns { get; set; } = 0;
+    public event MoveUpdateHandler? OnMoveMade;
+    public event GameInfoFetchedHandler? OnGameInfoFetched;
 
-    private LichessStream Stream { get; set; }
-
-    public List<Move> Moves { get; set; } = new List<Move>();
-
-    // Declare the event using the delegate
-    /// <summary>
-    /// Occurs when a move is made in the game.
-    /// </summary>
-    /// <remarks>
-    /// This event is triggered whenever a new move is processed in the game, providing the details of the move.
-    /// The moves may be 3 to 60 seconds delayed.
-    /// </remarks>
-    public event MoveUpdateHandler OnMoveMade;
-
-    internal void ProcessData(object o, JObject data)
+    private void ProcessData(object o, JObject data)
     {
-        if (data.ContainsKey("initialFEN"))
-        {
-            initialFEN = data["initialFEN"].ToString();
-        }
+        //Check if it is data for a new game
+        FetchDataForNewGame(data);
+        //Check if it is data for a move
+        FetchDataForMove(data);
 
-        if (data.ContainsKey("player"))
-        {
-            player = data["player"].ToString();
-        }
+        //Console.WriteLine(data);
+    }
 
-        if (data.ContainsKey("lastMove"))
+    private void FetchDataForNewGame(JObject data)
+    {
+        try
         {
-            lastMove = data["lastMove"].ToString();
-        }
-
-        if (data.ContainsKey("turns"))
-        {
-            Turns = data["turns"].ToObject<int>();
-        }
-
-        if (data.ContainsKey("lm"))
-        {
-            Moves.Add(new()
+            if (data.ContainsKey("id"))
             {
-                Notation = data["lm"].ToString(),
-                IsWhite = data["fen"].ToString().EndsWith("w"),
-                MoveNumber = ((Turns + Moves.Count()) / 2) + 1
-            });
-            OnMoveMade?.Invoke(this, Moves[^1]);
+                var game = new OngoingGame();
+                game.GameId = data["id"].ToObject<string>();
+                game.PlysAtInitFen = data["turns"].ToObject<int>();
+                //game.Fen = data["initialFen"].ToObject<string>();
+                _games.Add(data["id"].ToObject<string>(), game);
+
+                OnGameInfoFetched?.Invoke(this, game);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void FetchDataForMove(JObject data)
+    {
+        try
+        {
+            if (data.ContainsKey("lm"))
+            {
+                Console.WriteLine("Move made");
+
+                var gameID = "";
+                int moveNr = 1;
+                if (_games.Count == 1)
+                {
+                    gameID = _games.First().Key;
+                }
+
+                if (_games[gameID].Moves == null) _games[gameID].Moves = new List<Move>();
+
+                var move = new Move()
+                {
+                    Notation = data["lm"].ToString(),
+                    IsWhite = data["fen"].ToString().Contains(" w "),
+                    GameID = gameID,
+                    MoveNumber = ((_games[gameID].Moves.Count()) / 2) + 1
+                };
+
+                if (_games.ContainsKey(gameID))
+                {
+                    _games[gameID].Moves.Add(move);
+                }
+
+                OnMoveMade?.Invoke(this, move);
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine();
+            throw;
         }
     }
 }
