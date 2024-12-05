@@ -19,4 +19,6 @@ public class OngoingGame
     public string Source { get; set; }
     public string Speed { get; set; }
     public Variant Variant { get; set; }
+    public int PlysAtInitFen { get; set; }
+    public List<Move> Moves { get; set; }
 }

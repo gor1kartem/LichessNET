@@ -5,6 +5,7 @@
 /// </summary>
 public class Move
 {
+    public string GameID { get; set; }
     public int MoveNumber { get; set; }
     public bool IsWhite { get; set; }
     public string Notation { get; set; }

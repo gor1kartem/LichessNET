@@ -14,18 +14,41 @@ public class LichessStream
     private static int LichessStreamCounter = 0;
 
     private readonly ILogger _logger;
+    private HttpMethod method;
+
+    private HttpRequestMessage request;
     private string requestUri = "https://lichess.org/api/bot/game/stream/gameId";
+
+    private string StreamID = "";
 
 
     public LichessStream(string requestURL)
     {
         requestUri = requestURL;
 
+        request = new HttpRequestMessage()
+        {
+            RequestUri = new Uri(requestUri)
+        };
+        method = HttpMethod.Get;
 
         var loggerFactory = LoggerFactory.Create(builder => builder
             .AddSpectreConsole());
 
-        _logger = loggerFactory.CreateLogger("LichessStream_" + LichessStreamCounter);
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StreamID = new string(Enumerable.Repeat(chars, 12)
+            .Select(s => s[new Random().Next(s.Length)]).ToArray());
+        _logger = loggerFactory.CreateLogger("LichessStream_" + StreamID);
+    }
+
+    public LichessStream(HttpRequestMessage request, HttpMethod method)
+    {
+        this.request = request;
+        this.method = method;
+
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StreamID = new string(Enumerable.Repeat(chars, 12)
+            .Select(s => s[new Random().Next(s.Length)]).ToArray());
     }
 
     // Declare the event using the delegate
@@ -33,8 +56,6 @@ public class LichessStream
 
     public async Task StreamGameAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
         LichessStreamCounter++;
 
         if (LichessStreamCounter > 5)
@@ -67,11 +88,13 @@ public class LichessStream
                         var json = JObject.Parse(line);
                         // Raise the event when a game update is received
                         GameUpdateReceived?.Invoke(this, json);
+                        Console.WriteLine(line);
                     }
                 }
             }
         }
 
+        Console.WriteLine("Exiting Lichess Stream");
         LichessStreamCounter--;
     }
 }

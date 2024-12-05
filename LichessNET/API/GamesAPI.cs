@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities.Game;
+﻿using System.Text;
+using LichessNET.Entities.Game;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,6 +38,39 @@ public partial class LichessApiClient
             Tuple.Create("max", max.ToString()));
 
         var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var list = new List<Game>();
+
+        var gamepgns = content.Split("\n\n\n");
+        foreach (var gamepgn in gamepgns)
+        {
+            try
+            {
+                if (gamepgn.Length < 10) continue;
+                list.Add(Game.FromPgn(gamepgn.Trim()));
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Failed to parse a pgn: " + gamepgn);
+                throw;
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Retrieves multiple chess games from the Lichess API using a list of unique identifiers.
+    /// </summary>
+    /// <param name="ids">An array of unique game identifiers to retrieve.</param>
+    /// <returns>A list of <see cref="Game"/> objects representing the retrieved chess games.</returns>
+    public async Task<List<Game>> GetGamesAsync(params string[] ids)
+    {
+        var request = GetRequestScaffold("api/games/export/_ids");
+        var idsJoined = string.Join(",", ids);
+        request.Content = new StringContent(idsJoined, Encoding.UTF8, "text/plain");
+        var response = await SendRequest(request, HttpMethod.Post);
         var content = await response.Content.ReadAsStringAsync();
 
         var list = new List<Game>();
@@ -164,7 +198,36 @@ public partial class LichessApiClient
     /// <returns>A GameStream object that provides updates as the game progresses.</returns>
     public async Task<GameStream> GetGameStreamAsync(string gameId)
     {
-        return new GameStream(gameId);
+        var request = new HttpRequestMessage();
+        request.RequestUri = new Uri("https://lichess.org/api/stream/game/" + gameId);
+        return new GameStream(request, HttpMethod.Post);
+    }
+
+    /// <summary>
+    /// Stream the games played between a list of users, in real time.
+    /// Only games where both players are part of the list are included.
+    /// The stream emits an event each time a game is started or finished.
+    /// To also get all current ongoing games at the beginning of the stream, use the withCurrentGames flag. 
+    /// </summary>
+    /// <param name="UserIDs"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<GameStream> GetGameStreamByUserAsync(params string[] UserIDs)
+    {
+        if (UserIDs.Length > 300) throw new Exception("Lichess only allows up to 300 users to be tracked at once.");
+        var request = new HttpRequestMessage();
+        request.RequestUri = new Uri("https://lichess.org/api/stream/games-by-users");
+        request.Content = new StringContent(string.Join(",", UserIDs), Encoding.UTF8, "text/plain");
+        return new GameStream(request, HttpMethod.Post);
+    }
+
+    public async Task<GameStream> GetGameStreamByIDsAsync(params string[] GameIDs)
+    {
+        if (GameIDs.Length > 500) throw new Exception("Lichess only allows up to 500 games to be tracked at once.");
+        var request = new HttpRequestMessage();
+        request.RequestUri = new Uri("https://lichess.org/api/stream/streamlichessnet}");
+        request.Content = new StringContent(string.Join(",", GameIDs), Encoding.UTF8, "text/plain");
+        return new GameStream(request, HttpMethod.Post);
     }
 
     /// <summary>
