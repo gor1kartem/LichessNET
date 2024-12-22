@@ -6,9 +6,10 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageTags>lichess api</PackageTags>
-        <Version>0.1.1</Version>
-        <Description>This is still in heavy development, and by far not really functional. 
-            It currently can access all user endpoints of Lichess with a token.
+        <Version>0.2.0</Version>
+        <Description>A high-level wrapper for the Lichess API in C#.
+            Implements all endpoints a normal application needs, and also accepts user tokens.
+            Visit the GitHub Repo for more information.
         </Description>
         <PackageIcon>lichessnet.jpg</PackageIcon>
         <RepositoryUrl>https://github.com/Rabergsel/LichessNET/tree/master</RepositoryUrl>
