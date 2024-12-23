@@ -2,17 +2,9 @@
 
 namespace LichessNET.Entities.Enumerations;
 
-/// <summary>
-/// Represents the various game modes available in Lichess.
-/// This also includes all time controls for standard chess, which makes this
-/// different than the <see cref="ChessVariant"/> enumeration.
-/// </summary>
-public enum Gamemode
+public enum ChessVariant
 {
-    [EnumMember(Value = "bullet")] Bullet,
-    [EnumMember(Value = "blitz")] Blitz,
-    [EnumMember(Value = "rapid")] Rapid,
-    [EnumMember(Value = "classical")] Classical,
+    [EnumMember(Value = "standard")] Standard,
     [EnumMember(Value = "chess960")] Chess960,
     [EnumMember(Value = "kingOfTheHill")] KingOfTheHill,
     [EnumMember(Value = "threeCheck")] ThreeCheck,
