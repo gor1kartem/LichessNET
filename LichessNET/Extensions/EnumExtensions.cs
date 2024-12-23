@@ -14,4 +14,14 @@ internal static class EnumExtensions
             .GetCustomAttribute<EnumMemberAttribute>(false)?
             .Value;
     }
+
+    public static string GetEnumMemberValue<T>(this T enumValue) where T : Enum
+    {
+        var type = typeof(T);
+        var memberInfo = type.GetMember(enumValue.ToString());
+        var attribute =
+            memberInfo[0].GetCustomAttributes(typeof(EnumMemberAttribute), false).FirstOrDefault() as
+                EnumMemberAttribute;
+        return attribute?.Value;
+    }
 }
