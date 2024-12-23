@@ -11,18 +11,73 @@
 ## [Documentation](https://rabergsel.github.io/LichessNET/index.html)
 
 
-LichessNET is a C# library for interacting with the Lichess API. It provides functionalities to fetch and parse game data, user information, and other resources from the Lichess API.
+LichessNET is a C# library for interacting with the Lichess API. It allows you to manage games, challenges, and other Lichess features programmatically.
 
-**This ReadME will be elongated as soon as the project gets close to v1**
+## Features
+
+- Download games from Lichess
+- Download games per user and tournaments
+- Retrieve game information
+- Accept and decline challenges
+- Challenge users to games
+- Get User information
+- Authorize with the Lichess Token
 
 ## Installation
 
-You can install LichessNET via NuGet. 
+To install LichessNET, you can clone the repository and build the project using your preferred IDE (e.g., JetBrains Rider, Visual Studio, ...), or download it from [NuGet](https://www.nuget.org/packages/LichessNET)
 
 | Downloads                                                       | Version  |
 | -------------                                                   | ------------- |
 | ![NuGet Downloads](https://img.shields.io/nuget/dt/LichessNET)  | ![NuGet Version](https://img.shields.io/nuget/v/LichessNET)  |
 
+
+## Usage
+To use LichessNET in your project, you will have to include the `LichessNET.API` namespace:
+
+Without Lichess Token
+```C# Without Lichess Token
+using LichessNET.API;
+var client = new LichessAPIClient();
+```
+
+With Lichess Token
+```C# With Lichess Token
+using LichessNET.API;
+var client = new LichessApiClient(/* YOUR OPTIONAL LICHESS TOKEN */);
+//If your token became invalid, the client will fall back to not using a token.
+```
+
+## Code Snippets
+
+<details>
+  <summary>Access games from Lichess</summary>
+  By Game ID:
+  
+  ```C#
+    var game = await client.GetGameAsync("cFcjVWzn");
+  ```
+
+You can find the Game ID of a game in the URL of the game.
+</details>
+
+<details>
+  <summary>Challenges</summary>
+
+```C#
+  bool accepted = await client.AcceptChallengeAsync("challengeId");
+  bool declined = await client.DeclineChallengeAsync("challengeId");
+```
+  
+</details>
+
+## Contributions are welcome
+
+I welcome contributions of all kinds to LichessNET! Whether you're fixing bugs, adding features, improving documentation, or submitting issues, your input is highly appreciated. As you can see, there is still a lot of things to do. To contribute, simply fork the repository, make your changes, and submit a pull request. Thank you for helping make LichessNET better!
+
+## Projects
+
+If you have any cool projects that were made with this package, please let me know via an issue, so I can display it here.
 
 ## Currently supported Endpoints:
 - [x] Fetching account data
@@ -34,9 +89,11 @@ You can install LichessNET via NuGet.
 - [x] Live updating chess games
 - [x] Managing follows
 - [x] Get ongoing games
+- [x] Cloud evaluation access
+- [x] Challenge management
+- [x] Get puzzles
 - [ ] Upload games to lichess
 - [ ] Lichess TV
-- [ ] Get puzzles
 - [ ] Joining/Leaving a team
 - [ ] Managing Team
 - [ ] Board events streaming
@@ -44,7 +101,6 @@ You can install LichessNET via NuGet.
 - [ ] Chatting
 - [ ] Game management
 - [ ] Bot endpoints
-- [ ] Challenge management
 - [ ] Bulk pairings
 - [ ] Arena tournaments
 - [ ] Swiss tournaments
@@ -53,7 +109,6 @@ You can install LichessNET via NuGet.
 - [ ] Manage studies
 - [ ] Send a private message
 - [ ] Broadcasts
-- [ ] Cloud evaluation access
 - [ ] External engine
 - [ ] Opening explorer
 - [ ] Tablebases
