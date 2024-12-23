@@ -7,7 +7,14 @@ namespace LichessNET.API;
 
 public partial class LichessApiClient
 {
-    public async Task<PositionEvaluation> GetCachedEvaluationAsync(string fen, int multiPv = 1,
+    /// <summary>
+    /// Gets the evaluation of a position from the Lichess cloud analysis.
+    /// </summary>
+    /// <param name="fen">The FEN of the position</param>
+    /// <param name="multiPv">How much different variants to include in the analysis. Can go up to 5.</param>
+    /// <param name="variant">Which chess variant the game is from</param>
+    /// <returns>A PositionEvaluation object</returns>
+    public async Task<PositionEvaluation> GetCloudEvaluationAsync(string fen, int multiPv = 1,
         ChessVariant variant = ChessVariant.Standard)
     {
         _ratelimitController.Consume();
