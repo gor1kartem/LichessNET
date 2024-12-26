@@ -23,6 +23,8 @@ LichessNET is a C# library for interacting with the Lichess API. It allows you t
 - Get User information
 - Authorize with the Lichess Token
 
+- Too see where this trip is going, you may want to have a look to the Milestones: https://github.com/Rabergsel/LichessNET/milestones
+
 ## Installation
 
 To install LichessNET, you can clone the repository and build the project using your preferred IDE (e.g., JetBrains Rider, Visual Studio, ...), or download it from [NuGet](https://www.nuget.org/packages/LichessNET)
