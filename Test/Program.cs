@@ -5,13 +5,13 @@ using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var allLeaderboards = await client.GetAllLeaderboardsAsync();
-
-foreach (var leaderboard in allLeaderboards)
+var ratingHistory = await client.GetRatingHistory("rabergsel");
+foreach (var mode in ratingHistory)
 {
-    Console.WriteLine($"Leaderboard: {leaderboard.Key}");
-    foreach (var entry in leaderboard.Value)
+    Console.WriteLine("Mode: " + mode.Key.ToString());
+    foreach (var rating in mode.Value)
     {
-        Console.WriteLine($"Rank: Username: {entry.Username}");
+        Console.WriteLine("Rating: " + rating.Rating);
+        Console.WriteLine("Date: " + rating.Date);
     }
 }

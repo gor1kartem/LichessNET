@@ -210,4 +210,28 @@ public partial class LichessApiClient
 
         return user;
     }
+
+    public async Task<Dictionary<Gamemode, List<RatingDataPoint>>> GetRatingHistory(string username)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/user/{username}/rating-history");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var json = JArray.Parse(content);
+        var ratingHistory = new Dictionary<Gamemode, List<RatingDataPoint>>();
+
+        foreach (var item in json)
+        {
+            if (Enum.TryParse(item["name"]?.ToString(), true, out Gamemode gamemode))
+            {
+                var points = item["points"].ToObject<List<List<int>>>();
+                var dataPoints = points.Select(p => new RatingDataPoint(p[0], p[1], p[2], p[3])).ToList();
+                ratingHistory[gamemode] = dataPoints;
+            }
+        }
+
+        return ratingHistory;
+    }
 }
