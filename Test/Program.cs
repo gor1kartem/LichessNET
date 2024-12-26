@@ -5,4 +5,14 @@ using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var game = await client.GetGameAsync("cFcjVWzn");
+var timeline = await client.GetTimelineAsync(DateTime.Now.AddMonths(-7), 20);
+
+foreach (var ev in timeline.Entries)
+{
+    Console.WriteLine($"Type: {ev.Type} @ {ev.EventTime}");
+}
+
+foreach (var u in timeline.Users)
+{
+    Console.WriteLine($"User: {u.Value.Name}");
+}

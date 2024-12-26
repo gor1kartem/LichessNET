@@ -1,6 +1,7 @@
 ﻿using LichessNET.Entities;
 using LichessNET.Entities.Account;
 using LichessNET.Entities.Social;
+using LichessNET.Entities.Social.Timeline;
 using Newtonsoft.Json;
 
 namespace LichessNET.API;
@@ -169,6 +170,23 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/unblock/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!.ok.ToObject<bool>();
+    }
+
+    public async Task<Timeline?> GetTimelineAsync(DateTime since, int nb = 15)
+    {
+        _ratelimitController.Consume("api/timeline", false);
+
+        var unixTimestamp = new DateTimeOffset(since).ToUnixTimeMilliseconds();
+        var request = GetRequestScaffold($"api/timeline?since={unixTimestamp}&nb={nb}");
+
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        return JsonConvert.DeserializeObject<Timeline>(content, new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Converters = new List<JsonConverter> { new TimelineEventDataConverter() }
+        });
     }
 }
