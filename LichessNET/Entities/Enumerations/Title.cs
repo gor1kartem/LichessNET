@@ -5,10 +5,17 @@
 /// </summary>
 public enum Title
 {
-    Cm,
-    Nm,
-    Im,
-    Gm,
-    Lm,
+    CM,
+    NM,
+    FM,
+    IM,
+    GM,
+    LM,
+
+    WCM,
+    WFM,
+    WIM,
+    WGM,
+
     None
 }

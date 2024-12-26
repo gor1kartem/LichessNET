@@ -82,13 +82,25 @@ public class LichessUser
             switch (title)
             {
                 case "CM":
-                    return Title.Cm;
+                    return Title.CM;
+                case "FM":
+                    return Title.FM;
                 case "IM":
-                    return Title.Im;
+                    return Title.IM;
                 case "GM":
-                    return Title.Gm;
+                    return Title.GM;
+
+                case "WCM":
+                    return Title.WCM;
+                case "WFM":
+                    return Title.WFM;
+                case "WIM":
+                    return Title.WIM;
+                case "WGM":
+                    return Title.WGM;
+
                 case "LM":
-                    return Title.Lm;
+                    return Title.LM;
                 default:
                     return Title.None;
             }

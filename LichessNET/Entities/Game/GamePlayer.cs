@@ -9,6 +9,8 @@ namespace LichessNET.Entities.Game;
 public class GamePlayer
 {
     public string Name { get; set; }
+
+    //TODO: Add serialization for Title
     public Title Title { get; set; } = Title.None;
     public int Rating { get; set; }
 }
