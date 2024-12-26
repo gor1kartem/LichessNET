@@ -1,4 +1,5 @@
-﻿using LichessNET.Extensions;
+﻿using LichessNET.Entities.Enumerations;
+using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using Vertical.SpectreLogger;
 using ZstdNet;
@@ -50,6 +51,68 @@ public class DatabaseClient
 
         string url =
             $"https://database.lichess.org/standard/lichess_db_standard_rated_{year}-{month.ToString().PadLeft(2, '0')}.pgn.zst";
+
+        _logger.LogInformation($"Requesting database for {year}-{month.ToString().PadLeft(2, '0')}");
+
+        using (var client = new HttpClientDownloadWithProgress(url, filename + ".zst"))
+        {
+            client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
+            {
+                _logger.LogInformation(
+                    $"Downloading database for {year}-{month.ToString().PadLeft(2, '0')}: {progressPercentage}% ({totalBytesDownloaded.ToSIPrefix()}B/{totalFileSize?.ToSIPrefix()}B)");
+            };
+
+            await client.StartDownload();
+        }
+
+        using (var inputStream = new FileStream(filename + ".zst", FileMode.Open, FileAccess.Read))
+        using (var outputStream = new FileStream(filename + ".pgn", FileMode.Create, FileAccess.Write))
+        using (var decompressionStream = new DecompressionStream(inputStream))
+        {
+            await decompressionStream.CopyToAsync(outputStream);
+        }
+
+        //Deleting the compressed file to save space
+        File.Delete(filename + ".zst");
+
+        _logger.LogInformation($"File saved to {filename}.pgn");
+    }
+
+    /// <summary>
+    /// Downloads the monthly variant database from database.lichess.org
+    /// </summary>
+    /// <param name="year">The year of the database</param>
+    /// <param name="month">The month of the database</param>
+    /// <param name="variant">The variant of which to download the database</param>
+    /// <param name="filename"></param>
+    /// <param name="forceDownload"></param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when an invalid date or variant was requested</exception>
+    public async Task DownloadMonthlyDatabase(int year, int month, ChessVariant variant, string filename,
+        bool forceDownload = false)
+    {
+        if (variant == ChessVariant.Racer || variant == ChessVariant.Storm || variant == ChessVariant.Streak)
+        {
+            throw new ArgumentOutOfRangeException(nameof(variant), "This variant is not supported by the database.");
+        }
+
+        if (File.Exists(filename + ".pgn") & !forceDownload)
+        {
+            _logger.LogInformation("File already exists, it probably already contains the requested data.");
+            return;
+        }
+
+        if (month < 1 || month > 12)
+        {
+            throw new ArgumentOutOfRangeException(nameof(month), "Month must be between 1 and 12");
+        }
+
+        if (year < 2013)
+        {
+            throw new ArgumentOutOfRangeException(nameof(year), "Year must be 2013 or later");
+        }
+
+        string url =
+            $"https://database.lichess.org/{variant.GetEnumMemberValue()}/lichess_db_{variant.GetEnumMemberValue()}_rated_{year}-{month.ToString().PadLeft(2, '0')}.pgn.zst";
 
         _logger.LogInformation($"Requesting database for {year}-{month.ToString().PadLeft(2, '0')}");
 

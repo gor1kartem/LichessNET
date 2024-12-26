@@ -7,4 +7,4 @@ using LichessNET.Entities.Game;
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 var database = new DatabaseClient();
 
-await database.DownloadMonthlyDatabase(2014, 3, "2013-01", true);
+await database.DownloadMonthlyDatabase(2015, 1, ChessVariant.Atomic, "2013-01", true);
