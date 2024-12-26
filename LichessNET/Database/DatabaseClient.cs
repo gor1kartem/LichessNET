@@ -61,6 +61,9 @@ public class DatabaseClient
             await decompressionStream.CopyToAsync(outputStream);
         }
 
+        //Deleting the compressed file to save space
+        File.Delete(filename + ".zst");
+
         _logger.LogInformation($"File saved to {filename}.pgn");
     }
 }
