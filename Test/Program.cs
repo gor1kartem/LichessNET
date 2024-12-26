@@ -5,14 +5,13 @@ using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var timeline = await client.GetTimelineAsync(DateTime.Now.AddMonths(-7), 20);
+var allLeaderboards = await client.GetAllLeaderboardsAsync();
 
-foreach (var ev in timeline.Entries)
+foreach (var leaderboard in allLeaderboards)
 {
-    Console.WriteLine($"Type: {ev.Type} @ {ev.EventTime}");
-}
-
-foreach (var u in timeline.Users)
-{
-    Console.WriteLine($"User: {u.Value.Name}");
+    Console.WriteLine($"Leaderboard: {leaderboard.Key}");
+    foreach (var entry in leaderboard.Value)
+    {
+        Console.WriteLine($"Rank: Username: {entry.Username}");
+    }
 }

@@ -173,6 +173,12 @@ public partial class LichessApiClient
         return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!.ok.ToObject<bool>();
     }
 
+    /// <summary>
+    /// Gets the timeline of the authenticated user.
+    /// </summary>
+    /// <param name="since">When the timeline should start</param>
+    /// <param name="nb">The number of timeline events that should be loaded. Defaults to 15, the maximum is 50.</param>
+    /// <returns>A Timeline object</returns>
     public async Task<Timeline?> GetTimelineAsync(DateTime since, int nb = 15)
     {
         _ratelimitController.Consume("api/timeline", false);

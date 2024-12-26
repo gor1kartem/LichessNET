@@ -112,6 +112,29 @@ public partial class LichessApiClient
         return users;
     }
 
+    public async Task<Dictionary<Gamemode, List<LichessUser>>> GetAllLeaderboardsAsync()
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold("api/player");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var json = JObject.Parse(content);
+        var leaderboards = new Dictionary<Gamemode, List<LichessUser>>();
+
+        foreach (var property in json.Properties())
+        {
+            if (Enum.TryParse(property.Name, true, out Gamemode gamemode))
+            {
+                var users = property.Value.ToObject<List<LichessUser>>();
+                leaderboards[gamemode] = users ?? new List<LichessUser>();
+            }
+        }
+
+        return leaderboards;
+    }
+
     /// <summary>
     /// Retrieves the cross table for two specified users, summarizing the results of their games.
     /// </summary>
