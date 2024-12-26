@@ -1,5 +1,6 @@
 ﻿using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Social;
+using LichessNET.Entities.Social.Stream;
 using LichessNET.Entities.Stats;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -233,5 +234,17 @@ public partial class LichessApiClient
         }
 
         return ratingHistory;
+    }
+
+    public async Task<List<LiveStreamer>> GetAllLiveStreamers()
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold("api/streamer/live");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var liveStreamers = JsonConvert.DeserializeObject<List<LiveStreamer>>(content);
+        return liveStreamers;
     }
 }

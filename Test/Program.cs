@@ -5,13 +5,8 @@ using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var ratingHistory = await client.GetRatingHistory("rabergsel");
-foreach (var mode in ratingHistory)
+var alllivestreamers = await client.GetAllLiveStreamers();
+foreach (var streamer in alllivestreamers)
 {
-    Console.WriteLine("Mode: " + mode.Key.ToString());
-    foreach (var rating in mode.Value)
-    {
-        Console.WriteLine("Rating: " + rating.Rating);
-        Console.WriteLine("Date: " + rating.Date);
-    }
+    Console.WriteLine(streamer.Name);
 }
