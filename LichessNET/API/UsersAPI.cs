@@ -1,7 +1,9 @@
-﻿using LichessNET.Entities.Enumerations;
+﻿using LichessNET.Entities.Account.Performance;
+using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Social;
 using LichessNET.Entities.Social.Stream;
 using LichessNET.Entities.Stats;
+using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -236,9 +238,32 @@ public partial class LichessApiClient
         return ratingHistory;
     }
 
-    public async Task<List<LiveStreamer>> GetAllLiveStreamers()
+    /// <summary>
+    /// Gets the performance stats of a specified user on Lichess.
+    /// </summary>
+    /// <param name="username">The user to load</param>
+    /// <param name="perf">The gamemode of which to load the performance</param>
+    /// <returns></returns>
+    public async Task<PerformanceStats> GetUserPerformanceStatsAsync(string username, Gamemode gamemode)
     {
         _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/user/{username}/perf/{gamemode.GetEnumMemberValue()}");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var performanceStatsResponse = JsonConvert.DeserializeObject<PerformanceStats>(content);
+
+        return performanceStatsResponse;
+    }
+
+    /// <summary>
+    /// Returns all streamers currently being live
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<LiveStreamer>> GetAllLiveStreamers()
+    {
+        _ratelimitController.Consume("api/streamer/live", false);
 
         var request = GetRequestScaffold("api/streamer/live");
         var response = await SendRequest(request);
