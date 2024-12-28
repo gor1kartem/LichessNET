@@ -1,6 +1,9 @@
-﻿using LichessNET.Entities.Enumerations;
+﻿using LichessNET.Entities.Account.Performance;
+using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Social;
+using LichessNET.Entities.Social.Stream;
 using LichessNET.Entities.Stats;
+using LichessNET.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -112,6 +115,29 @@ public partial class LichessApiClient
         return users;
     }
 
+    public async Task<Dictionary<Gamemode, List<LichessUser>>> GetAllLeaderboardsAsync()
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold("api/player");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var json = JObject.Parse(content);
+        var leaderboards = new Dictionary<Gamemode, List<LichessUser>>();
+
+        foreach (var property in json.Properties())
+        {
+            if (Enum.TryParse(property.Name, true, out Gamemode gamemode))
+            {
+                var users = property.Value.ToObject<List<LichessUser>>();
+                leaderboards[gamemode] = users ?? new List<LichessUser>();
+            }
+        }
+
+        return leaderboards;
+    }
+
     /// <summary>
     /// Retrieves the cross table for two specified users, summarizing the results of their games.
     /// </summary>
@@ -186,5 +212,106 @@ public partial class LichessApiClient
 
 
         return user;
+    }
+
+    public async Task<Dictionary<Gamemode, List<RatingDataPoint>>> GetRatingHistory(string username)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/user/{username}/rating-history");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var json = JArray.Parse(content);
+        var ratingHistory = new Dictionary<Gamemode, List<RatingDataPoint>>();
+
+        foreach (var item in json)
+        {
+            if (Enum.TryParse(item["name"]?.ToString(), true, out Gamemode gamemode))
+            {
+                var points = item["points"].ToObject<List<List<int>>>();
+                var dataPoints = points.Select(p => new RatingDataPoint(p[0], p[1], p[2], p[3])).ToList();
+                ratingHistory[gamemode] = dataPoints;
+            }
+        }
+
+        return ratingHistory;
+    }
+
+    /// <summary>
+    /// Gets the performance stats of a specified user on Lichess.
+    /// </summary>
+    /// <param name="username">The user to load</param>
+    /// <param name="perf">The gamemode of which to load the performance</param>
+    /// <returns></returns>
+    public async Task<PerformanceStats> GetUserPerformanceStatsAsync(string username, Gamemode gamemode)
+    {
+        _ratelimitController.Consume();
+
+        var request = GetRequestScaffold($"api/user/{username}/perf/{gamemode.GetEnumMemberValue()}");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var performanceStatsResponse = JsonConvert.DeserializeObject<PerformanceStats>(content);
+
+        return performanceStatsResponse;
+    }
+
+    /// <summary>
+    /// Returns all streamers currently being live
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<LiveStreamer>> GetAllLiveStreamers()
+    {
+        _ratelimitController.Consume("api/streamer/live", false);
+
+        var request = GetRequestScaffold("api/streamer/live");
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var liveStreamers = JsonConvert.DeserializeObject<List<LiveStreamer>>(content);
+        return liveStreamers;
+    }
+
+    /// <summary>
+    /// Adds a note for the specified user
+    /// </summary>
+    /// <param name="username">User to add the note to.</param>
+    /// <param name="text">The note</param>
+    /// <returns>A boolean whether the post was successful.</returns>
+    public async Task<bool> AddUserNoteAsync(string username, string text)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/user/{username}/note";
+        var request = GetRequestScaffold(endpoint);
+
+        var parameters = new Dictionary<string, string>
+        {
+            { "text", text }
+        };
+
+        request.Content = new FormUrlEncodedContent(parameters);
+        var response = await SendRequest(request, HttpMethod.Post);
+        return response.Content.ReadAsStringAsync().Result.Contains("true");
+    }
+
+    /// <summary>
+    /// Gets the note from the authorized user for the specified user
+    /// </summary>
+    /// <param name="username">The user to get the notes for</param>
+    /// <returns>A list of notes</returns>
+    public async Task<List<Note>> GetUserNotesAsync(string username)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/user/{username}/note";
+        var request = GetRequestScaffold(endpoint);
+
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var notes = JsonConvert.DeserializeObject<List<Note>>(content);
+        return notes;
     }
 }

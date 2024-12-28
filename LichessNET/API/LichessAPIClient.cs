@@ -59,6 +59,9 @@ public partial class LichessApiClient
 
         _ratelimitController.RegisterBucket("api/account", TokenBuckets.Construct().WithCapacity(5)
             .WithFixedIntervalRefillStrategy(3, TimeSpan.FromSeconds(15)).Build());
+
+        _ratelimitController.RegisterBucket("api/streamer/live", TokenBuckets.Construct().WithCapacity(2)
+            .WithFixedIntervalRefillStrategy(1, TimeSpan.FromSeconds(5)).Build());
     }
 
 
