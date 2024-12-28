@@ -272,4 +272,46 @@ public partial class LichessApiClient
         var liveStreamers = JsonConvert.DeserializeObject<List<LiveStreamer>>(content);
         return liveStreamers;
     }
+
+    /// <summary>
+    /// Adds a note for the specified user
+    /// </summary>
+    /// <param name="username">User to add the note to.</param>
+    /// <param name="text">The note</param>
+    /// <returns>A boolean whether the post was successful.</returns>
+    public async Task<bool> AddUserNoteAsync(string username, string text)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/user/{username}/note";
+        var request = GetRequestScaffold(endpoint);
+
+        var parameters = new Dictionary<string, string>
+        {
+            { "text", text }
+        };
+
+        request.Content = new FormUrlEncodedContent(parameters);
+        var response = await SendRequest(request, HttpMethod.Post);
+        return response.Content.ReadAsStringAsync().Result.Contains("true");
+    }
+
+    /// <summary>
+    /// Gets the note from the authorized user for the specified user
+    /// </summary>
+    /// <param name="username">The user to get the notes for</param>
+    /// <returns>A list of notes</returns>
+    public async Task<List<Note>> GetUserNotesAsync(string username)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/user/{username}/note";
+        var request = GetRequestScaffold(endpoint);
+
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var notes = JsonConvert.DeserializeObject<List<Note>>(content);
+        return notes;
+    }
 }

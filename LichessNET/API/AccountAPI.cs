@@ -184,7 +184,9 @@ public partial class LichessApiClient
         _ratelimitController.Consume("api/timeline", false);
 
         var unixTimestamp = new DateTimeOffset(since).ToUnixTimeMilliseconds();
-        var request = GetRequestScaffold($"api/timeline?since={unixTimestamp}&nb={nb}");
+        var request = GetRequestScaffold($"api/timeline",
+            new Tuple<string, string>("since", unixTimestamp.ToString()),
+            new Tuple<string, string>("nb", nb.ToString()));
 
         var response = await SendRequest(request);
         var content = await response.Content.ReadAsStringAsync();
