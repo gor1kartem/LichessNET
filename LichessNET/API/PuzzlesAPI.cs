@@ -1,4 +1,5 @@
 ﻿using LichessNET.Entities.Puzzle;
+using LichessNET.Entities.Puzzle.Dashboard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -60,5 +61,25 @@ public partial class LichessApiClient
         var puzzle = jobj["puzzle"].ToObject<Puzzle>();
         puzzle.Game = jobj["game"].ToObject<PuzzleGame>();
         return puzzle;
+    }
+
+    /// <summary>
+    /// Retrieves the puzzle dashboard for a specified number of days.
+    /// </summary>
+    /// <param name="days">The number of days to look back when aggregating puzzle results.</param>
+    /// <returns>A task representing the asynchronous operation, containing the puzzle dashboard data.</returns>
+    public async Task<PuzzleDashboard> GetPuzzleDashboardAsync(int days)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/puzzle/dashboard/{days}";
+        var request = GetRequestScaffold(endpoint);
+
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var puzzleDashboardResponse = JsonConvert.DeserializeObject<PuzzleDashboard>(content);
+
+        return puzzleDashboardResponse;
     }
 }
