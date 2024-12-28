@@ -5,8 +5,8 @@ using LichessNET.Entities.Game;
 
 var client = new LichessApiClient(File.ReadAllText("token.txt"));
 
-var alllivestreamers = await client.GetAllLiveStreamers();
-foreach (var streamer in alllivestreamers)
+var popularteams = await client.GetPopularTeamsAsync(2);
+foreach (var team in popularteams)
 {
-    Console.WriteLine(streamer.Name);
+    Console.WriteLine(team.Name);
 }

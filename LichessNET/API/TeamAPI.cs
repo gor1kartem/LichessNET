@@ -1,4 +1,5 @@
 ﻿using LichessNET.Entities.Teams;
+using LichessNET.Entities.Tournament;
 using Newtonsoft.Json;
 
 namespace LichessNET.API;
@@ -20,6 +21,18 @@ public partial class LichessApiClient
         var team = JsonConvert.DeserializeObject<LichessTeam>(content);
 
         return team;
+    }
+
+    public async Task<List<LichessTeam>> GetPopularTeamsAsync(int page = 1)
+    {
+        _ratelimitController.Consume();
+        var request = GetRequestScaffold("api/team/all", new Tuple<string, string>("page", page.ToString()));
+        var response = await SendRequest(request);
+
+        var content = await response.Content.ReadAsStringAsync();
+        var teamspage = JsonConvert.DeserializeObject<dynamic>(content);
+
+        return teamspage["currentPageResults"].ToObject<List<LichessTeam>>();
     }
 
     /// <summary>
@@ -57,5 +70,35 @@ public partial class LichessApiClient
         var members = JsonConvert.DeserializeObject<List<TeamMember>>(content);
 
         return members;
+    }
+
+    /// <summary>
+    /// Retrieves all Swiss tournaments of a team.
+    /// </summary>
+    /// <param name="teamId">The ID of the team.</param>
+    /// <param name="max">The maximum number of tournaments to download. Default is 100.</param>
+    /// <returns>A task representing the asynchronous operation, containing the list of Swiss tournaments.</returns>
+    public async Task<List<SwissTournament>> GetTeamSwissTournamentsAsync(string teamId, int max = 100)
+    {
+        _ratelimitController.Consume();
+
+        var endpoint = $"api/team/{teamId}/swiss?max={max}";
+        var request = GetRequestScaffold(endpoint);
+
+        var response = await SendRequest(request);
+        var content = await response.Content.ReadAsStringAsync();
+
+        var tournaments = new List<SwissTournament>();
+        using (var reader = new StringReader(content))
+        {
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var tournament = JsonConvert.DeserializeObject<SwissTournament>(line);
+                tournaments.Add(tournament);
+            }
+        }
+
+        return tournaments;
     }
 }
