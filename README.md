@@ -100,11 +100,11 @@ If you have any cool projects that were made with this package, please let me kn
 - [x] Cloud evaluation access
 - [x] Challenge management
 - [x] Get puzzles
-- [ ] Upload games to lichess
-- [ ] Lichess TV
-- [ ] Joining/Leaving a team
+- [x] Board events streaming
+- [x] Joining/Leaving a team
+- [x] Tablebases
+- [x] OAuth2 (?)
 - [ ] Managing Team
-- [ ] Board events streaming
 - [ ] Queue for game
 - [ ] Chatting
 - [ ] Game management
@@ -118,6 +118,6 @@ If you have any cool projects that were made with this package, please let me kn
 - [ ] Send a private message
 - [ ] Broadcasts
 - [ ] External engine
-- [ ] Opening explorer
-- [ ] Tablebases
-- [ ] OAuth2 (?)
+- [ ] Opening explorer+
+- [ ] Upload games to lichess
+- [ ] Lichess TV
