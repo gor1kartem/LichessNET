@@ -11,7 +11,7 @@
 ## [Documentation](https://rabergsel.github.io/LichessNET/index.html)
 
 
-LichessNET is a C# library for interacting with the Lichess API. It allows you to manage games, challenges, and other Lichess features programmatically.
+LichessNET is a C# library for interacting with the Lichess API. It allows you to manage games, challenges, and other Lichess features programmatically. It is a high level wrapper for all important Lichess API endpoints, and also implements a wrapper for the database of Lichess (database.lichess.org)
 
 ## Features
 
