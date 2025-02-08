@@ -53,31 +53,31 @@ public class ApiRatelimitController
         _buckets.Add(endpointUrl, bucket);
     }
 
-    public void Consume()
+    public async Task Consume()
     {
         PipedRequests++;
         if (_rateLimitedUntil > DateTime.Now)
         {
             _logger.LogWarning("Endpoint blocked due to ratelimit. Waiting for " +
                                (_rateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
-            Thread.Sleep((_rateLimitedUntil - DateTime.Now).Milliseconds);
+            await Task.Delay((_rateLimitedUntil - DateTime.Now).Milliseconds);
         }
 
         _defaultBucket.Consume();
         PipedRequests--;
     }
 
-    public void Consume(string endpointUrl, bool consumedefaultBucket)
+    public async Task Consume(string endpointUrl, bool consumeDefaultBucket)
     {
         PipedRequests++;
         if (_rateLimitedUntil > DateTime.Now)
         {
             _logger.LogWarning("Endpoint call to " + endpointUrl + " blocked due to ratelimit. Waiting for " +
                                (_rateLimitedUntil - DateTime.Now).Milliseconds + " ms.");
-            Thread.Sleep((_rateLimitedUntil - DateTime.Now).Milliseconds);
+            await Task.Delay((_rateLimitedUntil - DateTime.Now).Milliseconds);
         }
 
-        if (consumedefaultBucket) _defaultBucket.Consume();
+        if (consumeDefaultBucket) _defaultBucket.Consume();
         if (_buckets.TryGetValue(endpointUrl, out var bucket)) bucket.Consume();
 
         PipedRequests--;
