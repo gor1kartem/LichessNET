@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities;
+﻿using System.Net.Http.Json;
+using LichessNET.Entities;
 using LichessNET.Entities.Account;
 using LichessNET.Entities.Social;
 using LichessNET.Entities.Social.Timeline;
@@ -76,10 +77,8 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/kid");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var kidModeStatus = JsonConvert.DeserializeObject<dynamic>(content).kid.ToObject<bool>();
-        return kidModeStatus;
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["kid"];
     }
 
     /// <summary>
