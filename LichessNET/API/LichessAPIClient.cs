@@ -106,7 +106,7 @@ public partial class LichessApiClient
         request.Content = content;
         
         _logger.LogInformation("Sending request to " + request.RequestUri);
-        var response = client.SendAsync(request).Result;
+        var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("Request to " + request.RequestUri + " successful.");

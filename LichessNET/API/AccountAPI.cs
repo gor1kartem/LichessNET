@@ -93,8 +93,6 @@ public partial class LichessApiClient
     /// </returns>
     public async Task<bool> SetKidModeStatus(bool enable)
     {
-        _ratelimitController.Consume("api/account", false);
-
         var request = GetRequestScaffold("api/account/kid", Tuple.Create("v", enable.ToString()));
         var response = await SendRequest(request, HttpMethod.Post);
 
