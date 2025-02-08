@@ -24,6 +24,6 @@ public partial class LichessApiClient
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var request = GetRequestScaffold("api/token");
         var response = await SendRequest(request, method: HttpMethod.Delete);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetToken());
     }
 }
