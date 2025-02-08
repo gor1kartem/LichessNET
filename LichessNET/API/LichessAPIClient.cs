@@ -18,9 +18,9 @@ namespace LichessNET.API;
 ///     Console.WriteLine($"User is part of {team.Count} teams.");
 ///     </code>
 /// </example>
-public partial class LichessApiClient
-
+public partial class LichessApiClient 
 {
+    private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
 
     /// <summary>
@@ -47,6 +47,9 @@ public partial class LichessApiClient
 
 
         this.Token = token;
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.Token);
+        
         if (token != "")
             _logger.LogInformation("Connecting to Lichess API with token");
         else
@@ -64,7 +67,7 @@ public partial class LichessApiClient
             .WithFixedIntervalRefillStrategy(1, TimeSpan.FromSeconds(5)).Build());
     }
 
-
+    
     /// <summary>
     ///     Gets the UriBuilder objects for the lichess client.
     ///     If something changes in the future, it will be easy to change it.
@@ -93,16 +96,15 @@ public partial class LichessApiClient
     }
 
     private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, HttpMethod method = null,
-        bool useToken = true)
+        bool useToken = true, HttpContent content = null)
     {
         if (method == null) method = HttpMethod.Get;
-        _ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
-        var client = new HttpClient();
-        if (useToken & Token != "")
-        {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        }
-
+        await _ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
+        var client = _httpClient;
+        
+        request.Method = method;
+        request.Content = content;
+        
         _logger.LogInformation("Sending request to " + request.RequestUri);
         var response = client.SendAsync(request).Result;
         if (response.IsSuccessStatusCode)
