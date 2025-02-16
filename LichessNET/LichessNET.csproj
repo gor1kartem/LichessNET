@@ -11,7 +11,6 @@
             Implements all endpoints a normal application needs, and also accepts user tokens.
             Visit the GitHub Repo for more information.
         </Description>
-        <PackageIcon>lichessnet.jpg</PackageIcon>
         <RepositoryUrl>https://github.com/Rabergsel/LichessNET/tree/master</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Rabergsel/LichessNET</PackageProjectUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,7 +19,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="TokenBucket" Version="2.0.0"/>
         <PackageReference Include="vertical-spectreconsolelogger" Version="0.10.1-dev.20241119.33"/>
         <PackageReference Include="ZstdNet" Version="1.4.5"/>
@@ -28,13 +27,7 @@
 
     <ItemGroup>
         <Folder Include="Attributes\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="lichessnet.jpg">
-            <Pack>True</Pack>
-            <PackagePath></PackagePath>
-        </None>
+        <Folder Include="Entities\Interfaces\" />
     </ItemGroup>
 
 </Project>

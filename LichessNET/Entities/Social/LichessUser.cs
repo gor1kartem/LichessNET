@@ -1,6 +1,7 @@
-﻿using LichessNET.Entities.Enumerations;
+﻿using LichessNET.Converters;
+using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Stats;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace LichessNET.Entities.Social;
 
@@ -14,25 +15,28 @@ public class LichessUser
     /// <summary>
     ///     User ID, often it is the Username written in lowercase
     /// </summary>
-    public string Id { get; set; } = String.Empty;
+    public required string Id { get; set; } = String.Empty;
 
     /// <summary>
     ///     The username of the user
     /// </summary>
-    public string Username { get; set; } = "Anonymous";
+    public required string Username { get; set; } = "Anonymous";
 
     /// <summary>
     ///     If the data is fetched in the request, the ratings will be set here.
     ///     The dictionary only contains those gamemodes as key, which were fetched.
     /// </summary>
-    public Dictionary<Gamemode, GamemodeStats>? Ratings { get; set; }
+    [JsonConverter(typeof(GamemodeStatsConverter))]
+    [JsonProperty(PropertyName = "Perfs")]
+    public Dictionary<Gamemode, IGameStats>? Ratings { get; set; }
 
     /// <summary>
     ///     Current flair of the user
     /// </summary>
     public string? Flair { get; set; }
 
-    private ulong? CreatedAt { get; set; }
+    [JsonConverter(typeof(MillisecondsDateTimeConverter))]
+    public DateTime? CreatedAt { get; set; }
 
     /// <summary>
     ///     Will be set to true if the user profile is disabled
@@ -48,8 +52,9 @@ public class LichessUser
     ///     The LichessProfile of the user
     /// </summary>
     public LichessProfile? Profile { get; set; }
-
-    private ulong? SeenAt { get; set; }
+    
+    [JsonConverter(typeof(MillisecondsDateTimeConverter))]
+    public DateTime? SeenAt { get; set; }
 
     /// <summary>
     ///     If set to true, this user is an active patron of lichess
@@ -67,46 +72,11 @@ public class LichessUser
     public PlaytimeStats? PlayTime { get; set; }
 
     /// <summary>
-    ///     Title of this user as string
-    /// </summary>
-    internal string? title { get; set; }
-
-    /// <summary>
     ///     The Title as an enumeration.
     ///     If the user has no title, Title.None will be returned
     /// </summary>
-    public Title Title
-    {
-        get
-        {
-            switch (title)
-            {
-                case "CM":
-                    return Title.CM;
-                case "FM":
-                    return Title.FM;
-                case "IM":
-                    return Title.IM;
-                case "GM":
-                    return Title.GM;
-
-                case "WCM":
-                    return Title.WCM;
-                case "WFM":
-                    return Title.WFM;
-                case "WIM":
-                    return Title.WIM;
-                case "WGM":
-                    return Title.WGM;
-
-                case "LM":
-                    return Title.LM;
-                default:
-                    return Title.None;
-            }
-        }
-    }
-
+    public Title? Title { get; set; }
+    public string? Url {get; set;}
     /// <summary>
     ///     The game count stats
     /// </summary>
@@ -117,6 +87,7 @@ public class LichessUser
     /// </summary>
     public bool? Streaming { get; set; }
 
+    public string? Playing { get; set; }
 
     /// <summary>
     ///     Set to true if the user allows being followed
@@ -137,33 +108,5 @@ public class LichessUser
     ///     Set to true if the user follows the user represented by the LichessClient
     /// </summary>
     public bool? FollowsYou { get; set; }
-
-    public static Dictionary<Gamemode, GamemodeStats> DeserializeRatings(JToken json)
-    {
-        var dictionary = new Dictionary<Gamemode, GamemodeStats>();
-
-        foreach (var perf in json.ToObject<Dictionary<string, GamemodeStats>>())
-        {
-            switch (perf.Key.ToLower())
-            {
-                case "bullet": dictionary.Add(Gamemode.Bullet, perf.Value); break;
-                case "blitz": dictionary.Add(Gamemode.Blitz, perf.Value); break;
-                case "rapid": dictionary.Add(Gamemode.Rapid, perf.Value); break;
-                case "classical": dictionary.Add(Gamemode.Classical, perf.Value); break;
-                case "atomic": dictionary.Add(Gamemode.Atomic, perf.Value); break;
-                case "antichess": dictionary.Add(Gamemode.Antichess, perf.Value); break;
-                case "chess960": dictionary.Add(Gamemode.Chess960, perf.Value); break;
-                case "kingofthehill": dictionary.Add(Gamemode.KingOfTheHill, perf.Value); break;
-                case "threecheck": dictionary.Add(Gamemode.ThreeCheck, perf.Value); break;
-                case "horde": dictionary.Add(Gamemode.Horde, perf.Value); break;
-                case "racingkings": dictionary.Add(Gamemode.RacingKings, perf.Value); break;
-                case "crazyhouse": dictionary.Add(Gamemode.Crazyhouse, perf.Value); break;
-                case "storm": dictionary.Add(Gamemode.Storm, perf.Value); break;
-                case "racer": dictionary.Add(Gamemode.Racer, perf.Value); break;
-                case "streak": dictionary.Add(Gamemode.Streak, perf.Value); break;
-            }
-        }
-
-        return dictionary;
-    }
+    
 }

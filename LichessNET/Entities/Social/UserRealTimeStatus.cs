@@ -8,7 +8,7 @@ namespace LichessNET.Entities.Social;
 /// </summary>
 public class UserRealTimeStatus
 {
-    public LichessUser User { get; set; } = new LichessUser();
+    public LichessUser User { get; set; }
 
     public string Name { get; set; } = "Anonymous";
 

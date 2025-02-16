@@ -89,20 +89,20 @@ public partial class LichessApiClient
                 };
 
                 var perfs = userJson["perfs"]?.ToObject<Dictionary<string, dynamic>>();
-                if (perfs != null && perfs.ContainsKey(perfType.ToString().ToLower()))
-                {
-                    user.Ratings = new Dictionary<Gamemode, GamemodeStats>
-                    {
-                        {
-                            perfType,
-                            new GamemodeStats
-                            {
-                                Rating = (int)(perfs[perfType.ToString().ToLower()]["rating"] ?? 0),
-                                Progress = (int)(perfs[perfType.ToString().ToLower()]["progress"] ?? 0)
-                            }
-                        }
-                    };
-                }
+                // if (perfs != null && perfs.ContainsKey(perfType.ToString().ToLower()))
+                // {
+                //     user.Ratings = new Dictionary<Gamemode, GamemodeStats>
+                //     {
+                //         {
+                //             perfType,
+                //             new GamemodeStats
+                //             {
+                //                 Rating = (int)(perfs[perfType.ToString().ToLower()]["rating"] ?? 0),
+                //                 Progress = (int)(perfs[perfType.ToString().ToLower()]["progress"] ?? 0)
+                //             }
+                //         }
+                //     };
+                // }
 
                 users.Add(user);
             }
@@ -197,21 +197,20 @@ public partial class LichessApiClient
     {
         //NOTE: The problem is, that lichess will provide matchup if the query parameter is provided.
         //This means, that we cannot just use the query parameter, but we have to check if the matchup is provided in the response.
-
-        _ratelimitController.Consume();
+        
 
         var endpoint = $"api/user/{username}";
         var request = GetRequestScaffold(endpoint);
         var response = await SendRequest(request);
         var content = await response.Content.ReadAsStringAsync();
-        var json = JObject.Parse(content);
-
-
-        LichessUser user = json.ToObject<LichessUser>();
-        user.Ratings = LichessUser.DeserializeRatings(json["perfs"]);
-
-
-        return user;
+        return JsonConvert.DeserializeObject<LichessUser>(content, new JsonSerializerSettings(){ MissingMemberHandling = MissingMemberHandling.Ignore});
+        //
+        //
+        // LichessUser user = json.ToObject<LichessUser>();
+        // user.Ratings = LichessUser.DeserializeRatings(json["perfs"]);
+        //
+        //
+        // return user;
     }
 
     public async Task<Dictionary<Gamemode, List<RatingDataPoint>>> GetRatingHistory(string username)

@@ -16,7 +16,7 @@ public class UserOverview
     {
         get
         {
-            if (string.IsNullOrEmpty(Title)) return Enumerations.Title.None;
+            if (string.IsNullOrEmpty(Title)) return Enumerations.Title.Bot;
             return (Title)Enum.Parse(typeof(Title), Title, true);
         }
     }

@@ -1,9 +1,12 @@
-﻿namespace LichessNET.Entities.Stats;
+﻿
+using Newtonsoft.Json;
+
+namespace LichessNET.Entities.Stats;
 
 /// <summary>
 ///     This class contains all stats of a user in a specific gamemode
 /// </summary>
-public class GamemodeStats
+public class GamemodeStats : IGameStats
 {
     /// <summary>
     ///     Amount of games played in this gamemode
@@ -23,6 +26,8 @@ public class GamemodeStats
     /// <summary>
     ///     The current progress of the user in this gamemode over the last 12 games
     /// </summary>
+    
+    [JsonProperty("Prog")]
     public int Progress { get; set; }
 
     /// <summary>
