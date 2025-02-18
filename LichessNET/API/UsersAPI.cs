@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities.Account.Performance;
+﻿using System.Net.Http.Json;
+using LichessNET.Entities.Account.Performance;
 using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Social;
 using LichessNET.Entities.Social.Stream;
@@ -74,43 +75,43 @@ public partial class LichessApiClient
         var endpoint = $"api/player/top/{nb}/{perfType.ToString().ToLower()}";
 
         var request = GetRequestScaffold(endpoint);
-        try
-        {
-            var response = await SendRequest(request);
-            var content = await response.Content.ReadAsStringAsync();
-            var json = JObject.Parse(content);
-
-            foreach (var userJson in json["users"])
-            {
-                var user = new LichessUser
-                {
-                    Id = userJson["id"]?.ToString(),
-                    Username = userJson["username"]?.ToString(),
-                };
-
-                var perfs = userJson["perfs"]?.ToObject<Dictionary<string, dynamic>>();
-                if (perfs != null && perfs.ContainsKey(perfType.ToString().ToLower()))
-                {
-                    user.Ratings = new Dictionary<Gamemode, GamemodeStats>
-                    {
-                        {
-                            perfType,
-                            new GamemodeStats
-                            {
-                                Rating = (int)(perfs[perfType.ToString().ToLower()]["rating"] ?? 0),
-                                Progress = (int)(perfs[perfType.ToString().ToLower()]["progress"] ?? 0)
-                            }
-                        }
-                    };
-                }
-
-                users.Add(user);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Exception occurred while fetching leaderboard for {perfType}: {ex.Message}");
-        }
+        // try
+        // {
+        //     var response = await SendRequest(request);
+        //     var content = await response.Content.ReadAsStringAsync();
+        //     var json = JObject.Parse(content);
+        //
+        //     foreach (var userJson in json["users"])
+        //     {
+        //         var user = new LichessUser
+        //         {
+        //             Id = userJson["id"]?.ToString(),
+        //             Username = userJson["username"]?.ToString(),
+        //         };
+        //
+        //         var perfs = userJson["perfs"]?.ToObject<Dictionary<string, dynamic>>();
+        //         if (perfs != null && perfs.ContainsKey(perfType.ToString().ToLower()))
+        //         {
+        //             user.Ratings = new Dictionary<Gamemode, GamemodeStats>
+        //             {
+        //                 {
+        //                     perfType,
+        //                     new GamemodeStats
+        //                     {
+        //                         Rating = (int)(perfs[perfType.ToString().ToLower()]["rating"] ?? 0),
+        //                         Progress = (int)(perfs[perfType.ToString().ToLower()]["progress"] ?? 0)
+        //                     }
+        //                 }
+        //             };
+        //         }
+        //
+        //         users.Add(user);
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     _logger.LogError($"Exception occurred while fetching leaderboard for {perfType}: {ex.Message}");
+        // }
 
         return users;
     }
@@ -203,15 +204,10 @@ public partial class LichessApiClient
         var endpoint = $"api/user/{username}";
         var request = GetRequestScaffold(endpoint);
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-        var json = JObject.Parse(content);
+        var content = await response.Content.ReadFromJsonAsync<LichessUser>();
 
 
-        LichessUser user = json.ToObject<LichessUser>();
-        user.Ratings = LichessUser.DeserializeRatings(json["perfs"]);
-
-
-        return user;
+        return content;
     }
 
     public async Task<Dictionary<Gamemode, List<RatingDataPoint>>> GetRatingHistory(string username)

@@ -1,4 +1,7 @@
-﻿using LichessNET.Entities.Enumerations;
+﻿using System.Text.Json.Serialization;
+using LichessNET.Converters;
+using LichessNET.Entities.Enumerations;
+using LichessNET.Entities.Interfaces;
 using LichessNET.Entities.Stats;
 using Newtonsoft.Json.Linq;
 
@@ -25,14 +28,17 @@ public class LichessUser
     ///     If the data is fetched in the request, the ratings will be set here.
     ///     The dictionary only contains those gamemodes as key, which were fetched.
     /// </summary>
-    public Dictionary<Gamemode, GamemodeStats>? Ratings { get; set; }
+    [JsonPropertyName("perfs")]
+    [JsonConverter(typeof(GameStatsConverter))]
+    public Dictionary<Gamemode, IGameStats>? Ratings { get; set; }
 
     /// <summary>
     ///     Current flair of the user
     /// </summary>
     public string? Flair { get; set; }
-
-    private ulong? CreatedAt { get; set; }
+    
+    [JsonConverter(typeof(MillisecondUnixConverter))]
+    public DateTime? CreatedAt { get; set; }
 
     /// <summary>
     ///     Will be set to true if the user profile is disabled
@@ -42,19 +48,20 @@ public class LichessUser
     /// <summary>
     ///     Will be set to true if the account is flagged for TOS violations
     /// </summary>
-    public bool? TosViolation { get; set; }
+    public bool TosViolation { get; set; }
 
     /// <summary>
     ///     The LichessProfile of the user
     /// </summary>
     public LichessProfile? Profile { get; set; }
 
-    private ulong? SeenAt { get; set; }
+    [JsonConverter(typeof(MillisecondUnixConverter))]
+    public DateTime? SeenAt { get; set; }
 
     /// <summary>
     ///     If set to true, this user is an active patron of lichess
     /// </summary>
-    public bool? Patron { get; set; }
+    public bool Patron { get; set; }
 
     /// <summary>
     ///     Set to true if the user is a verfied user
@@ -69,43 +76,8 @@ public class LichessUser
     /// <summary>
     ///     Title of this user as string
     /// </summary>
-    internal string? title { get; set; }
-
-    /// <summary>
-    ///     The Title as an enumeration.
-    ///     If the user has no title, Title.None will be returned
-    /// </summary>
-    public Title Title
-    {
-        get
-        {
-            switch (title)
-            {
-                case "CM":
-                    return Title.CM;
-                case "FM":
-                    return Title.FM;
-                case "IM":
-                    return Title.IM;
-                case "GM":
-                    return Title.GM;
-
-                case "WCM":
-                    return Title.WCM;
-                case "WFM":
-                    return Title.WFM;
-                case "WIM":
-                    return Title.WIM;
-                case "WGM":
-                    return Title.WGM;
-
-                case "LM":
-                    return Title.LM;
-                default:
-                    return Title.None;
-            }
-        }
-    }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Title? Title { get; set; }
 
     /// <summary>
     ///     The game count stats
@@ -118,11 +90,15 @@ public class LichessUser
     public bool? Streaming { get; set; }
 
 
+    public string? Url { get; set; }
+    public string? Playing { get; set; }
     /// <summary>
     ///     Set to true if the user allows being followed
     /// </summary>
     public bool? Followable { get; set; }
 
+    //TODO Add streamer property
+    
     /// <summary>
     ///     Set to true if the user is following
     /// </summary>
