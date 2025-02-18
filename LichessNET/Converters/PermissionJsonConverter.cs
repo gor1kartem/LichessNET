@@ -85,6 +85,6 @@ public class PermissionJsonConverter : JsonConverter<List<TokenPermission>>
 
     public override void Write(Utf8JsonWriter writer, List<TokenPermission> value, JsonSerializerOptions options)
     {
-        
+        throw new NotImplementedException();
     }
 }
