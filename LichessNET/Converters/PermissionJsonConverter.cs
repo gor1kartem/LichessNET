@@ -1,21 +1,15 @@
-﻿using System.Text.Json.Serialization;
-using LichessNET.Converters;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using LichessNET.Entities.Enumerations;
 
-namespace LichessNET.Entities.OAuth;
+namespace LichessNET.Converters;
 
-public class TokenInfo
+public class PermissionJsonConverter : JsonConverter<List<TokenPermission>>
 {
-    public string UserId { get; set; }
-    
-    [JsonConverter(typeof(PermissionJsonConverter))]
-    [JsonPropertyName("scopes")]
-    public List<TokenPermission> Permissions { get; set; }
-    public int? Expires { get; set; }
-
-    public bool IsAllowed(TokenPermission permission) => Permissions.Contains(permission);
-    public static List<TokenPermission> GetPermissions(string permissions)
+    public override List<TokenPermission>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+
+        var permissions = reader.GetString();
         string[] permissionsList = permissions.Split(',');
         List<TokenPermission> tokenPermissions = new List<TokenPermission>();
 
@@ -87,5 +81,10 @@ public class TokenInfo
         }
 
         return tokenPermissions;
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<TokenPermission> value, JsonSerializerOptions options)
+    {
+        
     }
 }
