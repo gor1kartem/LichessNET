@@ -54,10 +54,9 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/preferences");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
 
 
-        var preferences = JsonConvert.DeserializeObject<AccountPreferences>(content);
+        var preferences = await response.Content.ReadFromJsonAsync<AccountPreferences>();
         return preferences;
     }
 
