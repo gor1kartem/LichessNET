@@ -22,10 +22,8 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/email");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var emailResponse = JsonConvert.DeserializeObject<dynamic>(content);
-        return emailResponse.email.ToObject<string>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        return content["email"];
     }
 
     /// <summary>
