@@ -109,7 +109,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/follow/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -127,7 +128,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/unfollow/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -145,7 +147,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/block/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -163,7 +166,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/unblock/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!.ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
