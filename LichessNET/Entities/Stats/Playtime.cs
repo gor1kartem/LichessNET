@@ -1,17 +1,15 @@
 ﻿namespace LichessNET.Entities.Stats;
 
-public class PlaytimeStats
+public class Playtime
 {
-    public int Total;
-    public int Tv;
 
     /// <summary>
     ///     The total time played by the user
     /// </summary>
-    public TimeSpan TotalSpan => TimeSpan.FromSeconds(Total);
+    public TimeSpan TotalSpan { get; set; }
 
     /// <summary>
     ///     The total time seen on TV
     /// </summary>
-    public TimeSpan TvSpan => TimeSpan.FromSeconds(Tv);
+    public TimeSpan TvSpan { get; set; }
 }

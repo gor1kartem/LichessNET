@@ -71,7 +71,8 @@ public class LichessUser
     /// <summary>
     ///     The total playtime
     /// </summary>
-    public PlaytimeStats? PlayTime { get; set; }
+    [JsonConverter(typeof(SecondsToTimeSpanConverter))]
+    public Playtime PlayTime { get; set; }
 
     /// <summary>
     ///     Title of this user as string

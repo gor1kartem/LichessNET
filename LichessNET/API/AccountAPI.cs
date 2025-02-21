@@ -40,8 +40,7 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold("api/account");
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<LichessUser>(content);
+        return await response.Content.ReadFromJsonAsync<LichessUser>();
     }
 
     /// <summary>
