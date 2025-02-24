@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using LichessNET.Entities.Account.Performance;
 using LichessNET.Entities.Enumerations;
 using LichessNET.Entities.Social;
@@ -53,10 +54,9 @@ public partial class LichessApiClient
         );
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var userStatuses = JsonConvert.DeserializeObject<List<UserRealTimeStatus>>(content);
-        return userStatuses;
+        var content = await response.Content.ReadFromJsonAsync<List<UserRealTimeStatus>>(new JsonSerializerOptions()
+            { PropertyNameCaseInsensitive = true });
+        return content;
     }
 
     /// <summary>
