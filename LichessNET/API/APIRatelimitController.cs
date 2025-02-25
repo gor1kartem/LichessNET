@@ -67,6 +67,11 @@ public class ApiRatelimitController
         PipedRequests--;
     }
 
+    /// <summary>
+    /// Consumes one token for ratelimiting
+    /// </summary>
+    /// <param name="endpointUrl">Endpoint requested</param>
+    /// <param name="consumeDefaultBucket">Indicator whether this request consumes from global bucket</param>
     public async Task Consume(string endpointUrl, bool consumeDefaultBucket)
     {
         PipedRequests++;
