@@ -15,11 +15,11 @@ namespace LichessNET.API;
 /// <example>
 ///     This example shows how to initialize the LichessAPIClient.
 ///     <code>
-///     var client = new LichessApiClient("YOUR_API_TOKEN");
-///     Console.WriteLine($"User is part of {team.Count} teams.");
+///     var client = new LichessApiClient();
+///     client.SetToken("yourToken");
 ///     </code>
 /// </example>
-public partial class LichessApiClient 
+public partial class LichessApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
@@ -34,27 +34,6 @@ public partial class LichessApiClient
     /// </summary>
     private string? _token;
 
-    public string? GetToken() => _token;
-
-    public async Task SetToken(string? value)
-    {
-        if (value == null)
-        {
-            _token = null;
-            return;
-        }
-        var tokenTest = await TestTokensAsync(new List<string> { value });
-        if (tokenTest[value] is not null)
-        {
-            _token = value;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.GetToken());
-        }
-        else
-        {
-            throw new UnauthorizedAccessException("Invalid token");
-        }
-    }
-
     /// <summary>
     ///     Creates a lichess API client, according to settings
     /// </summary>
@@ -67,7 +46,7 @@ public partial class LichessApiClient
 
         _logger = loggerFactory.CreateLogger("LichessAPIClient");
 
-        
+
         _httpClient = new HttpClient();
 
         _ratelimitController.RegisterBucket("api/account", TokenBuckets.Construct().WithCapacity(5)
@@ -77,7 +56,38 @@ public partial class LichessApiClient
             .WithFixedIntervalRefillStrategy(1, TimeSpan.FromSeconds(5)).Build());
     }
 
-    
+    /// <summary>
+    /// Returns used token for the API
+    /// </summary>
+    /// <returns>Used token</returns>
+    public string? GetToken() => _token;
+
+    /// <summary>
+    /// Sets token to use for requests to the API
+    /// </summary>
+    /// <param name="value">API Token. If null, this client wont use a token, resulting in a reduced ratelimit</param>
+    /// <exception cref="UnauthorizedAccessException">Thrown when token is invalid</exception>
+    public async Task SetToken(string? value)
+    {
+        if (value == null)
+        {
+            _token = null;
+            return;
+        }
+
+        var tokenTest = await TestTokensAsync(new List<string> { value });
+        if (tokenTest[value] is not null)
+        {
+            _token = value;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.GetToken());
+        }
+        else
+        {
+            throw new UnauthorizedAccessException("Invalid token");
+        }
+    }
+
+
     /// <summary>
     ///     Gets the UriBuilder objects for the lichess client.
     ///     If something changes in the future, it will be easy to change it.
@@ -111,10 +121,10 @@ public partial class LichessApiClient
         if (method == null) method = HttpMethod.Get;
         await _ratelimitController.Consume(request.RequestUri.AbsolutePath, true);
         var client = _httpClient;
-        
+
         request.Method = method;
         request.Content = content;
-        
+
         _logger.LogInformation("Sending request to " + request.RequestUri);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
@@ -135,7 +145,7 @@ public partial class LichessApiClient
         {
             throw new HttpRequestException("Access denied. Your token does not have the required scope.");
         }
-        
+
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
             throw new UnauthorizedAccessException("Api Key is invalid.");

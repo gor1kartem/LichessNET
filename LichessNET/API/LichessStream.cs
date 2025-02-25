@@ -4,6 +4,9 @@ using Vertical.SpectreLogger;
 
 namespace LichessNET.API;
 
+/// <summary>
+/// Represents a stream sent by Lichess.
+/// </summary>
 public class LichessStream
 {
     // Define a delegate for the event
