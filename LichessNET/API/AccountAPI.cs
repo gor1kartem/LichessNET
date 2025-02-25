@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities;
+﻿using System.Net.Http.Json;
+using LichessNET.Entities;
 using LichessNET.Entities.Account;
 using LichessNET.Entities.Social;
 using LichessNET.Entities.Social.Timeline;
@@ -21,10 +22,8 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/email");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var emailResponse = JsonConvert.DeserializeObject<dynamic>(content);
-        return emailResponse.email.ToObject<string>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+        return content["email"];
     }
 
     /// <summary>
@@ -39,8 +38,7 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold("api/account");
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<LichessUser>(content);
+        return await response.Content.ReadFromJsonAsync<LichessUser>();
     }
 
     /// <summary>
@@ -56,10 +54,9 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/preferences");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
 
 
-        var preferences = JsonConvert.DeserializeObject<AccountPreferences>(content);
+        var preferences = await response.Content.ReadFromJsonAsync<AccountPreferences>();
         return preferences;
     }
 
@@ -76,10 +73,8 @@ public partial class LichessApiClient
         var request = GetRequestScaffold("api/account/kid");
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var kidModeStatus = JsonConvert.DeserializeObject<dynamic>(content).kid.ToObject<bool>();
-        return kidModeStatus;
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["kid"];
     }
 
     /// <summary>
@@ -93,8 +88,6 @@ public partial class LichessApiClient
     /// </returns>
     public async Task<bool> SetKidModeStatus(bool enable)
     {
-        _ratelimitController.Consume("api/account", false);
-
         var request = GetRequestScaffold("api/account/kid", Tuple.Create("v", enable.ToString()));
         var response = await SendRequest(request, HttpMethod.Post);
 
@@ -116,7 +109,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/follow/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -134,7 +128,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/unfollow/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -152,7 +147,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/block/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync()).ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>
@@ -170,7 +166,8 @@ public partial class LichessApiClient
 
         var request = GetRequestScaffold($"api/rel/unblock/{username}");
         var response = await SendRequest(request, HttpMethod.Post);
-        return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync())!.ok.ToObject<bool>();
+        var content = await response.Content.ReadFromJsonAsync<Dictionary<string, bool>>();
+        return content["ok"];
     }
 
     /// <summary>

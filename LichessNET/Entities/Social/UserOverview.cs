@@ -10,14 +10,6 @@ public class UserOverview
     public string Id { get; set; }
     public string Name { get; set; }
     public bool Patron { get; set; }
-    public string Title { get; set; }
 
-    public Title ChessTitle
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(Title)) return Enumerations.Title.None;
-            return (Title)Enum.Parse(typeof(Title), Title, true);
-        }
-    }
+    public Title? Title { get; set; }
 }

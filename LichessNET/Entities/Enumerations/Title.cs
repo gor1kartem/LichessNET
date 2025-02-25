@@ -16,6 +16,5 @@ public enum Title
     WFM,
     WIM,
     WGM,
-
-    None
+    Bot,
 }

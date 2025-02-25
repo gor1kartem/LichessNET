@@ -21,7 +21,10 @@ public enum Gamemode
     [EnumMember(Value = "horde")] Horde,
     [EnumMember(Value = "racingKings")] RacingKings,
     [EnumMember(Value = "crazyhouse")] Crazyhouse,
-    [EnumMember(Value = "puzzle")] Storm,
-    [EnumMember(Value = "puzzle")] Racer,
-    [EnumMember(Value = "puzzle")] Streak
+    Storm, 
+    Racer,
+    Streak,
+    UltraBullet,
+    Correspondence,
+    Puzzle
 }
