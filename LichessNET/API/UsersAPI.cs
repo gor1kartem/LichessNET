@@ -67,53 +67,20 @@ public partial class LichessApiClient
     /// <returns>
     /// A task representing the asynchronous operation, containing a list of top players in the specified game mode.
     /// </returns>
+    // TODO
     public async Task<List<LichessUser>> GetLeaderboardAsync(int nb, Gamemode perfType)
     {
         _ratelimitController.Consume();
-
-        var users = new List<LichessUser>();
+        
+        var gamemode = perfType.ToString().Substring(0, 1).ToLower() + perfType.ToString().Substring(1);
         var endpoint = $"api/player/top/{nb}/{perfType.ToString().ToLower()}";
-
         var request = GetRequestScaffold(endpoint);
-        // try
-        // {
-        //     var response = await SendRequest(request);
-        //     var content = await response.Content.ReadAsStringAsync();
-        //     var json = JObject.Parse(content);
-        //
-        //     foreach (var userJson in json["users"])
-        //     {
-        //         var user = new LichessUser
-        //         {
-        //             Id = userJson["id"]?.ToString(),
-        //             Username = userJson["username"]?.ToString(),
-        //         };
-        //
-        //         var perfs = userJson["perfs"]?.ToObject<Dictionary<string, dynamic>>();
-        //         if (perfs != null && perfs.ContainsKey(perfType.ToString().ToLower()))
-        //         {
-        //             user.Ratings = new Dictionary<Gamemode, GamemodeStats>
-        //             {
-        //                 {
-        //                     perfType,
-        //                     new GamemodeStats
-        //                     {
-        //                         Rating = (int)(perfs[perfType.ToString().ToLower()]["rating"] ?? 0),
-        //                         Progress = (int)(perfs[perfType.ToString().ToLower()]["progress"] ?? 0)
-        //                     }
-        //                 }
-        //             };
-        //         }
-        //
-        //         users.Add(user);
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     _logger.LogError($"Exception occurred while fetching leaderboard for {perfType}: {ex.Message}");
-        // }
+        var message = await SendRequest(request);
+        var users = await message.Content.ReadFromJsonAsync<Dictionary<string, List<LichessUser>>>(new JsonSerializerOptions()
+            { PropertyNameCaseInsensitive = true });
 
-        return users;
+
+        return users["users"];
     }
 
     public async Task<Dictionary<Gamemode, List<LichessUser>>> GetAllLeaderboardsAsync()
@@ -277,8 +244,6 @@ public partial class LichessApiClient
     /// <returns>A boolean whether the post was successful.</returns>
     public async Task<bool> AddUserNoteAsync(string username, string text)
     {
-        _ratelimitController.Consume();
-
         var endpoint = $"api/user/{username}/note";
         var request = GetRequestScaffold(endpoint);
 
@@ -289,7 +254,8 @@ public partial class LichessApiClient
 
         request.Content = new FormUrlEncodedContent(parameters);
         var response = await SendRequest(request, HttpMethod.Post);
-        return response.Content.ReadAsStringAsync().Result.Contains("true");
+        var answer = await response.Content.ReadFromJsonAsync<Dictionary<string, Boolean>>();
+        return answer["ok"];
     }
 
     /// <summary>
@@ -299,15 +265,11 @@ public partial class LichessApiClient
     /// <returns>A list of notes</returns>
     public async Task<List<Note>> GetUserNotesAsync(string username)
     {
-        _ratelimitController.Consume();
-
         var endpoint = $"api/user/{username}/note";
         var request = GetRequestScaffold(endpoint);
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
-
-        var notes = JsonConvert.DeserializeObject<List<Note>>(content);
+        var notes = await response.Content.ReadFromJsonAsync<List<Note>>();
         return notes;
     }
 }
