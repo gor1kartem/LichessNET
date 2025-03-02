@@ -18,7 +18,8 @@ public partial class LichessApiClient
     {
         var tokenBody = string.Join(',', tokens);
         var request = GetRequestScaffold("api/token/test");
-        var response = await SendRequest(request, content: new StringContent(tokenBody), method: HttpMethod.Post);
+        request.Content = new StringContent(tokenBody);
+        var response = await SendRequest(request, method: HttpMethod.Post);
         Console.WriteLine(await response.Content.ReadAsStringAsync());
         var tokenInfo =
             await response.Content.ReadFromJsonAsync<Dictionary<string, TokenInfo>>(new JsonSerializerOptions
