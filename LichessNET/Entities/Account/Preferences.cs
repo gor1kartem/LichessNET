@@ -5,6 +5,44 @@
 /// </summary>
 public class Preferences
 {
+    internal Preferences(PreferencesMiddleman middleman)
+    {
+        var prefs = middleman.Prefs;
+        Dark = prefs.Dark;
+        Transp = prefs.Transp;
+        BgImg = prefs.BgImg;
+        Is3d = prefs.Is3d;
+        Theme = prefs.Theme;
+        PieceSet = prefs.PieceSet;
+        Theme3d = prefs.Theme3d;
+        PieceSet3d = prefs.PieceSet3d;
+        SoundSet = prefs.SoundSet;
+        AutoQueen = prefs.AutoQueen;
+        AutoThreefold = prefs.AutoThreefold;
+        Takeback = prefs.Takeback;
+        Moretime = prefs.Moretime;
+        ClockTenths = prefs.ClockTenths;
+        ClockBar = prefs.ClockBar;
+        ClockSound = prefs.ClockSound;
+        Premove = prefs.Premove;
+        Animation = prefs.Animation;
+        Captured = prefs.Captured;
+        Follow = prefs.Follow;
+        Highlight = prefs.Highlight;
+        Destination = prefs.Destination;
+        Coords = prefs.Coords;
+        Replay = prefs.Replay;
+        Challenge = prefs.Challenge;
+        Message = prefs.Message;
+        SubmitMove = prefs.SubmitMove;
+        ConfirmResign = prefs.ConfirmResign;
+        InsightShare = prefs.InsightShare;
+        KeyboardMove = prefs.KeyboardMove;
+        Zen = prefs.Zen;
+        Ratings = prefs.Ratings;
+        MoveEvent = prefs.MoveEvent;
+        RookCastle = prefs.RookCastle;
+    }
     public bool Dark { get; set; }
     public bool Transp { get; set; }
     public string BgImg { get; set; }
@@ -39,4 +77,6 @@ public class Preferences
     public int Ratings { get; set; }
     public int MoveEvent { get; set; }
     public int RookCastle { get; set; }
+    public string Language { get; set; }
+    public Preferences Prefs { get; set; }
 }

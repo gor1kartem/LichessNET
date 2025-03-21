@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using LichessNET.Entities;
 using LichessNET.Entities.Account;
 using LichessNET.Entities.Social;
@@ -45,9 +46,9 @@ public partial class LichessApiClient
     /// Retrieves the account preferences of the authenticated user.
     /// </summary>
     /// <returns>
-    /// An instance of <see cref="AccountPreferences"/> representing the user's account preferences.
+    /// An instance of <see cref="PreferencesMiddleman"/> representing the user's account preferences.
     /// </returns>
-    public async Task<AccountPreferences> GetAccountPreferences()
+    public async Task<Preferences> GetAccountPreferences()
     {
         _ratelimitController.Consume("api/account", false);
 
@@ -55,9 +56,11 @@ public partial class LichessApiClient
 
         var response = await SendRequest(request);
 
-
-        var preferences = await response.Content.ReadFromJsonAsync<AccountPreferences>();
-        return preferences;
+        
+        var json = await response.Content.ReadFromJsonAsync<PreferencesMiddleman>();
+        Preferences prefs = new Preferences(json);
+        prefs.Language = json.Language;
+        return prefs;
     }
 
     /// <summary>
