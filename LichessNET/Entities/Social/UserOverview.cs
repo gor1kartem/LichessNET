@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities.Enumerations;
+﻿using System.Text.Json.Serialization;
+using LichessNET.Entities.Enumerations;
 
 namespace LichessNET.Entities.Social;
 
@@ -11,5 +12,6 @@ public class UserOverview
     public string Name { get; set; }
     public bool Patron { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public Title? Title { get; set; }
 }
