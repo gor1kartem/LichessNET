@@ -18,7 +18,7 @@ public class UserRealTimeStatus
     public bool? Playing { get; set; } = false;
     public bool? Streaming { get; set; } = false;
     public bool? Patron { get; set; } = false;
-    internal int? Signal { get; set; } = 5;
+    internal int? Signal { get; set; }
 
     public SignalConnection SignalConnection
     {
