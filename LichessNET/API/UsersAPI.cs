@@ -177,6 +177,18 @@ public partial class LichessApiClient
         return content;
     }
 
+    public async Task<List<LichessUser>> GetUsersAsync(IEnumerable<string> users)
+    {
+        var usersString = string.Join(',', users);
+        var endpoint = "api/users";
+        var request = GetRequestScaffold(endpoint);
+        request.Content = new StringContent(usersString);
+        var response = await SendRequest(request, HttpMethod.Post);
+        return await response.Content.ReadFromJsonAsync<List<LichessUser>>();
+
+
+    }
+
     public async Task<Dictionary<Gamemode, List<RatingDataPoint>>> GetRatingHistory(string username)
     {
         _ratelimitController.Consume();
