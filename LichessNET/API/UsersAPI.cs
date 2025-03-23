@@ -81,27 +81,15 @@ public partial class LichessApiClient
         return users["users"];
     }
 
-    public async Task<Dictionary<Gamemode, List<LichessUser>>> GetAllLeaderboardsAsync()
+    public async Task<Dictionary<Gamemode, List<LeaderboardUserOverview>>> GetAllLeaderboardsAsync()
     {
         _ratelimitController.Consume();
 
         var request = GetRequestScaffold("api/player");
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
+        var stats = await response.Content.ReadFromJsonAsync<Dictionary<Gamemode, List<LeaderboardUserOverview>>>();
 
-        var json = JObject.Parse(content);
-        var leaderboards = new Dictionary<Gamemode, List<LichessUser>>();
-
-        foreach (var property in json.Properties())
-        {
-            if (Enum.TryParse(property.Name, true, out Gamemode gamemode))
-            {
-                var users = property.Value.ToObject<List<LichessUser>>();
-                leaderboards[gamemode] = users ?? new List<LichessUser>();
-            }
-        }
-
-        return leaderboards;
+        return stats;
     }
 
     /// <summary>
