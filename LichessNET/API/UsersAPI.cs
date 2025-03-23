@@ -68,17 +68,15 @@ public partial class LichessApiClient
     /// A task representing the asynchronous operation, containing a list of top players in the specified game mode.
     /// </returns>
     // TODO
-    public async Task<List<LichessUser>> GetLeaderboardAsync(int nb, Gamemode perfType)
+    public async Task<List<LeaderboardUserOverview>> GetLeaderboardAsync(int nb, Gamemode perfType)
     {
         _ratelimitController.Consume();
         
         var gamemode = perfType.ToString().Substring(0, 1).ToLower() + perfType.ToString().Substring(1);
         var endpoint = $"api/player/top/{nb}/{perfType.ToString().ToLower()}";
         var request = GetRequestScaffold(endpoint);
-        var message = await SendRequest(request);
-        var users = await message.Content.ReadFromJsonAsync<Dictionary<string, List<LichessUser>>>(new JsonSerializerOptions()
-            { PropertyNameCaseInsensitive = true });
-
+        var response = await SendRequest(request);
+        var users = await response.Content.ReadFromJsonAsync<Dictionary<string, List<LeaderboardUserOverview>>>();
 
         return users["users"];
     }
