@@ -11,6 +11,7 @@ public class UserOverview
     public string Id { get; set; }
     public string Name { get; set; }
     public bool Patron { get; set; }
+    public string Flair { get; set; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Title? Title { get; set; }

@@ -1,4 +1,6 @@
-﻿using LichessNET.Entities.Teams;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using LichessNET.Entities.Teams;
 using LichessNET.Entities.Tournament;
 using LichessNET.Entities.Tournament.Arena;
 using Newtonsoft.Json;
@@ -27,18 +29,16 @@ public partial class LichessApiClient
     /// <summary>
     /// Gets the most populat teams on Lichess in a paginated manner.
     /// </summary>
-    /// <param name="page">Page number, defaults to 1</param>
+    /// <param name="page">Page parameter, defaults to 1. Despite the fact that the Lichess API reports thousands of pages (NumberOfPages property), when trying to request pages with a very great number, Lichess returns "resource too old". During testing, the maximum allowed page number was 40. It is recommended to request teams in the range 1-40 "</param>
     /// <returns>The list of the most popular teams on the specified page.</returns>
-    public async Task<List<LichessTeam>> GetPopularTeamsAsync(int page = 1)
+    public async Task<TeamPaginator> GetPopularTeamsAsync(int page = 1)
     {
         _ratelimitController.Consume();
         var request = GetRequestScaffold("api/team/all", new Tuple<string, string>("page", page.ToString()));
         var response = await SendRequest(request);
 
-        var content = await response.Content.ReadAsStringAsync();
-        var teamspage = JsonConvert.DeserializeObject<dynamic>(content);
-
-        return teamspage["currentPageResults"].ToObject<List<LichessTeam>>();
+        var content = await response.Content.ReadFromJsonAsync<TeamPaginator>(new JsonSerializerOptions(){PropertyNameCaseInsensitive = true});
+        return content;
     }
 
     /// <summary>
