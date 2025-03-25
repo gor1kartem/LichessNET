@@ -1,4 +1,5 @@
-﻿using LichessNET.Entities.Puzzle;
+﻿using System.Net.Http.Json;
+using LichessNET.Entities.Puzzle;
 using LichessNET.Entities.Puzzle.Dashboard;
 using LichessNET.Entities.Puzzle.PuzzleStorm;
 using Newtonsoft.Json;
@@ -77,11 +78,9 @@ public partial class LichessApiClient
         var request = GetRequestScaffold(endpoint);
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadFromJsonAsync<PuzzleDashboard>();
 
-        var puzzleDashboardResponse = JsonConvert.DeserializeObject<PuzzleDashboard>(content);
-
-        return puzzleDashboardResponse;
+        return content;
     }
 
     /// <summary>
