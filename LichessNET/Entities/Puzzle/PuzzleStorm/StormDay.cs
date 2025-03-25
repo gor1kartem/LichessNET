@@ -1,21 +1,13 @@
-﻿namespace LichessNET.Entities.Puzzle.PuzzleStorm;
+﻿using System.Text.Json.Serialization;
+using LichessNET.Converters;
+
+namespace LichessNET.Entities.Puzzle.PuzzleStorm;
 
 public class StormDay
 {
-    public string Id { get; set; }
-
-    public DateOnly Date
-    {
-        get
-        {
-            return new DateOnly(
-                int.Parse(Id.Split('/')[0]),
-                int.Parse(Id.Split('/')[1]),
-                int.Parse(Id.Split('/')[2])
-            );
-        }
-    }
-
+    [JsonPropertyName("_id")]
+    [JsonConverter(typeof(DateOnlyIsoConverter))]
+    public DateOnly? Date { get; set; }
     public int Combo { get; set; }
     public int Errors { get; set; }
     public int Highest { get; set; }

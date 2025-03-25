@@ -97,11 +97,9 @@ public partial class LichessApiClient
         var request = GetRequestScaffold(endpoint, new Tuple<string, string>("days", days.ToString()));
 
         var response = await SendRequest(request);
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadFromJsonAsync<StormDashboard>();
 
-        var stormDashboardResponse = JsonConvert.DeserializeObject<StormDashboard>(content);
-
-        return stormDashboardResponse;
+        return content;
     }
 
 
